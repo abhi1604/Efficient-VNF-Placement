@@ -1,0 +1,25 @@
+Node
+resources
+id==EDGE_NODE  = [10-20]
+id==CORE_NODE  = [50-100]
+
+LinkInfo
+bandwidth 100Mbps, 1Gbps
+delay 	0.01ms - 0.5ms
+
+VNF
+processing_delay = 0.1ms
+resources = [1-5]
+
+Request
+thrughput 1,2,5,10
+delay 1ms
+
+NODES
+NODE_ID NODE_TYPE
+.
+.
+.
+NODE_ID EDGES NODES...
+.
+.
