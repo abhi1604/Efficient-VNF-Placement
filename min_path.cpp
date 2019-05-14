@@ -52,12 +52,12 @@ float algo2(vector<struct Request> requests)
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
-	map<int, vector<int>> vnfNodes;
+	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 
 	int satisfied = 0;
 	for(auto &request:requests)
 	{
-		vector<pair<int, int>> selected_path = multi_stage(request, local_graph, vnfNodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		vector<pair<int, int>> selected_path = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		if(!selected_path.empty())
 			satisfied += deployVNFSwithInterference(request, selected_path, local_nodes, local_graph);
 		cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;

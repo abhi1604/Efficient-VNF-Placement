@@ -65,11 +65,20 @@ struct path_info
 	vector<int> path;
 };
 
-int interference_metric(struct Node node, pair<int, int> NF)
+float interference_metric(struct Node node, pair<int, int> NF)
 {
 	vector<struct VNF> existing_vnf = node.existing_vnf;
 
 	int type = NF.first;
 	int resources = NF.second;
-	return 1;
+
+	int total_required_resources = 0;
+	for(auto vnf: existing_vnf)
+	{
+		total_required_resources += vnf.resources;
+	}
+	total_required_resources += resources;
+
+	float interference = 1.0*total_required_resources/node.resources;
+	return interference;
 }

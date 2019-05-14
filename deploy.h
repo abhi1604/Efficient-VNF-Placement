@@ -116,7 +116,7 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 				// compute interference of vnf_type with node with id path[j] here and update minInterference
 				if(local_nodes[path_node_id].available_resources>resources) // consider only if the node has sufficient resources
 				{
-					int temp = interference_metric(local_nodes[path_node_id], request.NF[i]);
+					float temp = interference_metric(local_nodes[path_node_id], request.NF[i]);
 					if(minInterference > temp)
 					{
 						minInterference = temp;     // update the interference value
@@ -124,7 +124,7 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 					}		
 				}
 			}
-			if(minInterference==INT_MAX)
+			if(minInterference==INT_MAX) // cannot place this vnf anywhere in the path
 				return 0;
 			node1 = minInterferenceNodeId;
 			// deploy this nf here
@@ -153,7 +153,11 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 		
 		if(is_shareable(type))
 		{
-			;
+			for(auto &localvnf: local_nodes[node].existing_vnf)
+			{
+				if(localvnf.type == type)
+					localvnf.resources -= resources;
+			}
 		}
 		else
 		{
