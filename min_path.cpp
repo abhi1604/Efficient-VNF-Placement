@@ -120,7 +120,7 @@ void processRequests()
 
 int main()
 {
-	ifstream in("inp-params.txt");
+	ifstream in("input.txt");
 	if(in.is_open())
 	{
 		// Take Information about the nodes here
@@ -160,10 +160,33 @@ int main()
 					temp.bandwidth = 100;
 				else
 					temp.bandwidth = 1000;
-				float delay = (rand()%100)/100.0;
-				temp.delay = delay;
+				int e1=0, e2=0; // initally mark both node1, node2 as non edge
+				// make more delay between edge and core
+				if (find(edge_nodes.begin(), edge_nodes.end(), node1)!=edge_nodes.end())
+				{
+					e1=1;
+				}
+				if (find(edge_nodes.begin(), edge_nodes.end(), node2)!=edge_nodes.end())
+				{
+					e2=1;
+				}
+
+				if(e1==1&&e2==1) // both are edge nodes
+				{
+					;
+				}
+				else if(e1==0&&e2==0)  // both are core nodes
+				{
+					;
+				}
+				else   // one of them is edge 
+				{
+					;
+				}
 				temp.node1 = node1;
 				temp.node2 = node2;
+				float delay = (rand()%100)/100.0;
+				temp.delay = delay;
 				graph[node1].push_back(temp);
 			}
 		}
