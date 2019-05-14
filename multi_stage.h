@@ -1,7 +1,6 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <limits.h> 
-
 using namespace std;
 
 vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct LinkInfo>> graph, map<int, vector<int>> &vnfNodes, vector<struct Node> local_nodes)
@@ -15,11 +14,11 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
     float delay = request.delay;
 
     // create a shareable nodes vector to know if that node is already deployed in the graph
-    vector<pair<int, int>> shareable_nodes;
+    vector<pair<int, struct Resources>> shareable_nodes;
     for(int i=0; i<request.NF.size(); ++i)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
-        int vnf_resources = request.NF[i].second;
+        struct Resources vnf_resources = request.NF[i].second;
 		if(is_shareable(vnf_type))
 		{
 			if(!vnfNodes[vnf_type].empty())
@@ -39,12 +38,12 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
     for(int i=1; i<matrix.size()-1; ++i)
     {
         int shareable_vnf = shareable_nodes[counter].first;
-        int resources_req = shareable_nodes[counter].second;
+        struct Resources resources_req = shareable_nodes[counter].second;
         for(auto node:vnfNodes[shareable_vnf])
         {
             for(auto vnf : local_nodes[node].existing_vnf)
             {
-                if(vnf.type==shareable_vnf && vnf.resources>=resources_req)
+                if(vnf.type==shareable_vnf && is_available(vnf.resources, resources_req))
                     matrix[i].push_back(node); // matrix has info about where all the shareable vnf is deployed
             }
         }

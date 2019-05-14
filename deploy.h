@@ -1,9 +1,7 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <limits.h> 
-
 using namespace std;
-
 
 int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
 {
@@ -11,7 +9,7 @@ int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &lo
 	int src = request.source;
 	int dest = request.destination;
 	int throughput = request.throughput;
-	vector<pair<int, int>> NF = request.NF;  // type of NF, resources it should have
+	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
 	vector<int> deployed_path;
 
 	// if(delay<DELAY_SENSITIVE)  // means it is delay sensitive
@@ -23,13 +21,13 @@ int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &lo
 	for(auto &nf:NF)
 	{
 		int type = nf.first;
-		int resources = nf.second;
+		struct Resources resources = nf.second;
 
 		while(true)
 		{
 			int node_id = path[curr];
 
-			if(local_nodes[node_id].available_resources>resources)
+			if(is_available(local_nodes[node_id].available_resources, resources))
 			{
 				deployed_path.push_back(node_id);
 				break;
@@ -60,10 +58,10 @@ int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &lo
 	for(auto node_id:deployed_path)
 	{
 		int type = request.NF[counter].first;
-		int resources = request.NF[counter].second;
+		struct Resources resources = request.NF[counter].second;
 		counter++;
 		// deploy this nf here
-		local_nodes[node_id].available_resources -= resources;
+		consume_resources(&local_nodes[node_id].available_resources, resources);
 
 		struct VNF temp;
 		temp.type = type;
@@ -82,7 +80,7 @@ int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &lo
 int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> path, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
 {
 	int throughput = request.throughput;
-	vector<pair<int, int>> NF = request.NF;  // type of NF, resources it should have
+	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
 	vector<int> deployed_path;
 
 	vector<int> shareable_id;
@@ -97,7 +95,7 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
     for(int i=0; i<request.NF.size(); ++i)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
-    	int resources = request.NF[i].second;
+    	struct Resources resources = request.NF[i].second;
 		if(is_shareable(vnf_type))
 		{
 			counter++;
@@ -114,7 +112,7 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 			{
 				int path_node_id = path[j].first; 
 				// compute interference of vnf_type with node with id path[j] here and update minInterference
-				if(local_nodes[path_node_id].available_resources>resources) // consider only if the node has sufficient resources
+				if(is_available(local_nodes[path_node_id].available_resources, resources)) // consider only if the node has sufficient resources
 				{
 					float temp = interference_metric(local_nodes[path_node_id], request.NF[i]);
 					if(minInterference > temp)
@@ -149,19 +147,19 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 	for(auto node:deployed_path)
 	{
 		int type = request.NF[counter].first;
-		int resources = request.NF[counter].second;
+		struct Resources resources = request.NF[counter].second;
 		
 		if(is_shareable(type))
 		{
 			for(auto &localvnf: local_nodes[node].existing_vnf)
 			{
 				if(localvnf.type == type)
-					localvnf.resources -= resources;
+					consume_resources(&localvnf.resources, resources);
 			}
 		}
 		else
 		{
-			local_nodes[node].available_resources -= resources;
+			consume_resources(&local_nodes[node].available_resources, resources);
 			struct VNF temp;
 			temp.type = type;
 			temp.resources = resources;

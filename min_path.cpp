@@ -20,15 +20,18 @@ int MAX_NODES = 100;
 
 bool criteria(struct Request request1, struct Request request2)
 {
-	int resource1=0, resource2=0;
+	struct Resources resource1, resource2;
+
+	resource1.cpu = 0;
+	resource2.cpu = 0;
 
 	for(int i=0;i<request1.NF.size();++i)
-		resource1 += request1.NF[i].second;
+		resource1.cpu += request1.NF[i].second.cpu;
 
 	for(int i=0;i<request2.NF.size();++i)
-		resource2 += request2.NF[i].second;
+		resource2.cpu += request2.NF[i].second.cpu;
 
-	return (float(request1.throughput/resource1) > float(request2.throughput/resource2));
+	return (float(request1.throughput/resource1.cpu) > float(request2.throughput/resource2.cpu));
 }
 
 float algo1(vector<struct Request> requests)
@@ -108,7 +111,8 @@ void processRequests()
 			{
 				map<int, int> ids;
 				int id = rand()%TYPES_AVAILABLE;
-				int resources = /*rand()%*/REQUEST_RESOURCES + 1;
+				struct Resources resources;
+				resources.cpu = /*rand()%*/REQUEST_RESOURCES + 1;
 				temp.NF.push_back(make_pair(id, resources));
 			}
 			requests.push_back(temp);
@@ -134,9 +138,9 @@ int main()
 			temp.id = id;
 			temp.node_type = type;
 			if(type==EDGE_NODE)
-				temp.resources = rand()%(EDGE_RESOURCES/2) + ((EDGE_RESOURCES-1)/2);
+				temp.resources.cpu = rand()%(EDGE_RESOURCES/2) + ((EDGE_RESOURCES-1)/2);
 			else
-				temp.resources = rand()%(CORE_RESOURCES/2) + ((CORE_RESOURCES-1)/2);
+				temp.resources.cpu = rand()%(CORE_RESOURCES/2) + ((CORE_RESOURCES-1)/2);
 
 			if(type==EDGE_NODE)
 				edge_nodes.push_back(id);
