@@ -3,9 +3,9 @@
 #include <limits.h> 
 using namespace std;
 
-vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct LinkInfo>> graph, map<int, vector<int>> &vnfNodes, vector<struct Node> local_nodes)
+vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct LinkInfo>> graph, map<int, vector<int>> vnfNodes, vector<struct Node> local_nodes)
 {
-    // request has source, destination, NF{vector<pair<int, int>>}, throughput, delay 
+    // request has source, destination, NF{vector<pair<int, struct Resources>>}, throughput, delay 
     int V = graph.size();// Get the number of vertices in graph 
     float dist[V];      // dist values used to pick minimum weight edge in cut 
     int src = request.source;
@@ -98,6 +98,8 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
         p_nodes[i]=pt[p_nodes[i+1]][i];
     
     vector<pair<int, int>> complete_path;  // complete path
+
+    counter=0;
     for(int i=0; i<matrix.size()-1; ++i)
     {
         struct Request temp_request;
@@ -110,16 +112,18 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
         {
             pair<int, int> temp1;
             temp1.first = temp.path[j];
-            if(j==0)
-                temp1.second = 1;  // shareable vnf deployed here
+            if(j==0&&i!=0)
+                temp1.second = shareable_nodes[counter++].first;  // shareable vnf deployed here
+            else if(j==0&&i==0)
+                temp1.second = -2;
             else
-                temp1.second = 0;  // no shareable vnf deployed here
+                temp1.second = -1;  // no shareable vnf deployed here
             complete_path.push_back(temp1);
         }
     }
     pair<int, int> temp1;
     temp1.first = dest;
-    temp1.second = 1;
+    temp1.second = -2;
     complete_path.push_back(temp1);
     return complete_path;
 }

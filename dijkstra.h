@@ -92,7 +92,7 @@ int isEmpty(struct MinHeap* minHeap)
   
 // Standard function to extract minimum node from heap 
 struct MinHeapNode* extractMin(struct MinHeap* minHeap) 
-{ 
+{
     if (isEmpty(minHeap)) 
         return NULL; 
   
@@ -192,7 +192,7 @@ struct path_info dijkstra(struct Request request, vector<vector<struct LinkInfo>
   
         // Traverse through all adjacent vertices of u (the extracted 
         // vertex) and update their distance values  
-        for(auto &pCrawl : graph[u]) 
+        for(auto pCrawl : graph[u]) 
         { 
             int v = pCrawl.node2; 
   
@@ -205,9 +205,8 @@ struct path_info dijkstra(struct Request request, vector<vector<struct LinkInfo>
                 for(auto &vertex: paths[u])
                     paths[v].push_back(vertex);
                 paths[v].push_back(v);
-                pCrawl.available_bandwidth -= throughput;
                 dist[v] = dist[u] + pCrawl.delay; 
-                cout<<"delay is "<<pCrawl.delay<<endl;
+                // cout<<"delay is "<<pCrawl.delay<<endl;
                 // update distance value in min heap also 
                 decreaseKey(minHeap, v, dist[v]); 
             }
@@ -218,13 +217,13 @@ struct path_info dijkstra(struct Request request, vector<vector<struct LinkInfo>
     }
   
     // print the calculated shortest distances 
-    cout<<"The distance from source "<<src<<" to destination "<<dest<<" is: "<<dist[dest]<<endl;
-    cout<<"The path of the shortest distance is: ";
+    // cout<<"The distance from source "<<src<<" to destination "<<dest<<" is: "<<dist[dest]<<endl;
+    // cout<<"The path of the shortest distance is: ";
     // print the shortest distance
     
-    for(auto &vertex: paths[dest])
-        cout<<vertex<<" ";
-    cout<<endl;
+    // for(auto &vertex: paths[dest])
+    //     cout<<vertex<<" ";
+    // cout<<endl;
 
     if(dist[dest]>request.delay)
         paths[dest].clear();
@@ -233,4 +232,4 @@ struct path_info dijkstra(struct Request request, vector<vector<struct LinkInfo>
     selected_path.delay = dist[dest];
     selected_path.path = paths[dest];
     return selected_path;
-} 
+}

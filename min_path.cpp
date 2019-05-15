@@ -16,8 +16,6 @@ vector<int> edge_nodes;
 int nodes; // number of nodes to be present in the graph
 vector<struct Node> nodeInfo;   // storing the information about the nodes in a global variable
 
-int MAX_NODES = 100;
-
 bool criteria(struct Request request1, struct Request request2)
 {
 	struct Resources resource1, resource2;
@@ -43,9 +41,9 @@ float algo1(vector<struct Request> requests)
 	for(auto &request:requests)
 	{
 		struct path_info selected_path_info = dijkstra(request, local_graph);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		// cout<<"--------------------------------------path size-------"<<selected_path_info.path.size()<<"----------------------"<<endl;
 		if(!selected_path_info.path.empty())
 			satisfied += deployVNFS(request, selected_path_info.path, local_nodes, local_graph);
-		cout<<"--------------------------------------path size-------"<<selected_path_info.path.size()<<"----------------------"<<endl;
 	}
 	cout<<"satisfied "<<satisfied<<" "<<requests.size()<<"  "<<endl;
 	return float(1.0*satisfied)/requests.size();
@@ -61,9 +59,10 @@ float algo2(vector<struct Request> requests)
 	for(auto &request:requests)
 	{
 		vector<pair<int, int>> selected_path = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		// cout<<"I am here!\n";
 		if(!selected_path.empty())
-			satisfied += deployVNFSwithInterference(request, selected_path, local_nodes, local_graph);
-		cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;
+			satisfied += deployVNFSwithInterference(request, selected_path, local_nodes, local_graph, vnfNodes);
+		// cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;
 	}
 	cout<<"satisfied "<<satisfied<<" "<<requests.size()<<"  "<<endl;
 	return float(1.0*satisfied)/requests.size();
@@ -87,7 +86,6 @@ void processRequests()
 	int onlyOnce=1;
 	while(onlyOnce)
 	{
-
 		onlyOnce--;
 		vector<struct Request> requests;
 		// create random requests here
@@ -97,14 +95,15 @@ void processRequests()
 			struct Request temp;
 			int chain_length = /*rand()%*/CHAIN_LENGTH /*+ 1*/;
 			temp.destination = rand()%nodes;
-			// source!= destination
+			// ensure that source!= destination
 			do
 			{
 				temp.source = edge_nodes[rand()%edge_nodes.size()];
 			} while(temp.source==temp.destination);
-			float delay = (rand()%(1000*REQUEST_DELAY) + 0.1)/1000.0;
+			float delay = ((REQUEST_MAX_DELAY - REQUEST_MIN_DELAY) * ((float)rand() / RAND_MAX)) + REQUEST_MIN_DELAY;
 			temp.delay = delay;
-			temp.throughput = REQUEST_THROUGHPUT[rand()%REQUEST_THROUGHPUT.size()];
+			// temp.throughput = REQUEST_THROUGHPUT[rand()%REQUEST_THROUGHPUT.size()];
+			temp.throughput = ((REQUEST_MAX_THROUGHPUT - REQUEST_MIN_THROUGHPUT) * ((float)rand() / RAND_MAX)) + REQUEST_MIN_THROUGHPUT;
 			
 			// Filling the request
 			for(int j=0;j<chain_length;++j)
@@ -112,7 +111,7 @@ void processRequests()
 				map<int, int> ids;
 				int id = rand()%TYPES_AVAILABLE;
 				struct Resources resources;
-				resources.cpu = /*rand()%*/REQUEST_RESOURCES + 1;
+				resources.cpu = ((REQUEST_MAX_RESOURCES - REQUEST_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + REQUEST_MIN_RESOURCES;
 				temp.NF.push_back(make_pair(id, resources));
 			}
 			requests.push_back(temp);
@@ -138,10 +137,16 @@ int main()
 			temp.id = id;
 			temp.node_type = type;
 			if(type==EDGE_NODE)
-				temp.resources.cpu = rand()%(EDGE_RESOURCES/2) + ((EDGE_RESOURCES-1)/2);
+			{
+				temp.resources.cpu = EDGE_MIN_RESOURCES + rand() % (( EDGE_MAX_RESOURCES + 1 ) - EDGE_MIN_RESOURCES);
+				temp.available_resources.cpu = temp.resources.cpu;
+			}
+				// temp.resources.cpu = rand()%(EDGE_RESOURCES/2) + ((EDGE_RESOURCES)/2) + 1;
 			else
-				temp.resources.cpu = rand()%(CORE_RESOURCES/2) + ((CORE_RESOURCES-1)/2);
-
+			{
+				temp.resources.cpu = CORE_MIN_RESOURCES + rand() % (( CORE_MAX_RESOURCES + 1 ) - CORE_MIN_RESOURCES);
+				temp.available_resources.cpu = temp.resources.cpu;
+			}
 			if(type==EDGE_NODE)
 				edge_nodes.push_back(id);
 
@@ -159,11 +164,17 @@ int main()
 			{
 				in>>node2;
 				struct LinkInfo temp;
-				int for_bandwidth = rand()%2;
+				int for_bandwidth = 1/*rand()%2*/;
 				if(for_bandwidth==0)
+				{
+					temp.available_bandwidth = 100;
 					temp.bandwidth = 100;
+				}
 				else
+				{
 					temp.bandwidth = 1000;
+					temp.available_bandwidth =1000;
+				}
 				int e1=0, e2=0; // initally mark both node1, node2 as non edge
 				// make more delay between edge and core
 				if (find(edge_nodes.begin(), edge_nodes.end(), node1)!=edge_nodes.end())
@@ -174,22 +185,21 @@ int main()
 				{
 					e2=1;
 				}
-
+				float delay;
 				if(e1==1&&e2==1) // both are edge nodes
 				{
-					;
+					delay = ((EDGE_EDGE_MAX_DELAY - EDGE_EDGE_MIN_DELAY) * ((float)rand() / RAND_MAX)) + EDGE_EDGE_MIN_DELAY; // within [1-5] ms				
 				}
 				else if(e1==0&&e2==0)  // both are core nodes
 				{
-					;
+					delay = ((CORE_CORE_MAX_DELAY - CORE_CORE_MIN_DELAY) * ((float)rand() / RAND_MAX)) + CORE_CORE_MIN_DELAY; // within [10-15] ms				
 				}
 				else   // one of them is edge 
 				{
-					;
+					delay = ((EDGE_CORE_MAX_DELAY - EDGE_CORE_MIN_DELAY) * ((float)rand() / RAND_MAX)) + EDGE_CORE_MIN_DELAY; // within [5-10] ms				
 				}
 				temp.node1 = node1;
 				temp.node2 = node2;
-				float delay = (rand()%100)/100.0;
 				temp.delay = delay;
 				graph[node1].push_back(temp);
 			}

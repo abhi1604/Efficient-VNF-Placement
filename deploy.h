@@ -14,8 +14,6 @@ int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &lo
 
 	// if(delay<DELAY_SENSITIVE)  // means it is delay sensitive
 	// {
-	if(path.size()<NF.size())
-		return 0;  // TODO: consolidate or find different path
 
 	int curr=0;
 	for(auto &nf:NF)
@@ -77,26 +75,27 @@ int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &lo
 }
 
 
-int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> path, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
+int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> path, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, vector<int>> &vnfNodes)
 {
 	int throughput = request.throughput;
 	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
 	vector<int> deployed_path;
+	map<int, int> shareable_vnf_deployed;
 
 	vector<int> shareable_id;
 	for(int i=0; i<path.size(); ++i)
 	{
-		if(path[i].second==1)
+		if(path[i].second!=-1)
 			shareable_id.push_back(i);
 	}
 
 	int node1 = shareable_id[0], node2 = shareable_id[1];
-	int counter = 1; // not 0 because it is source
+	int counter = 1; // not 0, because it is the source
     for(int i=0; i<request.NF.size(); ++i)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
     	struct Resources resources = request.NF[i].second;
-		if(is_shareable(vnf_type))
+		if(is_shareable(vnf_type) && path[node1].second==vnf_type)
 		{
 			counter++;
 			node1 = node2;
@@ -124,8 +123,14 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 			}
 			if(minInterference==INT_MAX) // cannot place this vnf anywhere in the path
 				return 0;
+
 			node1 = minInterferenceNodeId;
 			// deploy this nf here
+
+			if(is_shareable(vnf_type))
+			{
+				shareable_vnf_deployed[vnf_type] = minInterferenceNodeId;
+			}
 			deployed_path.push_back(minInterferenceNodeId);
 		}
     }
@@ -149,7 +154,7 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 		int type = request.NF[counter].first;
 		struct Resources resources = request.NF[counter].second;
 		
-		if(is_shareable(type))
+		if(is_shareable(type) && shareable_vnf_deployed.count(type)>0)
 		{
 			for(auto &localvnf: local_nodes[node].existing_vnf)
 			{
@@ -157,8 +162,11 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 					consume_resources(&localvnf.resources, resources);
 			}
 		}
+
 		else
 		{
+			if(is_shareable(type))
+				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			consume_resources(&local_nodes[node].available_resources, resources);
 			struct VNF temp;
 			temp.type = type;

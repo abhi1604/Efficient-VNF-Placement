@@ -1,26 +1,52 @@
 #include<vector>
 using namespace std;
 
-int CORE_NODE = 0;
-int MAX_REQUESTS = 100;
-int EDGE_NODE = 1;
-int CHAIN_LENGTH = 4;
-int TYPES_AVAILABLE = 5;
-int EDGE_RESOURCES = 10; 
-int CORE_RESOURCES = 50; 
-vector<int> REQUEST_THROUGHPUT={1,2,5,10};
-int REQUEST_DELAY = 1;
-int REQUEST_RESOURCES = 2;
+int MAX_REQUESTS = 1000;
+int EDGE_NODE = 0;
+int CORE_NODE = 1;
+int CHAIN_LENGTH = 3;
+int TYPES_AVAILABLE = 4;
 
-int REQUESTS_PER_UNIT = 10;
+// edge node resources
+int EDGE_MIN_RESOURCES = 20;
+int EDGE_MAX_RESOURCES = 40; 
 
-float DELAY_SENSITIVE = 0.5;
+// core node resources
+int CORE_MIN_RESOURCES = 50;
+int CORE_MAX_RESOURCES = 200; 
+
+// request resources for a SFC
+int REQUEST_MIN_THROUGHPUT = 80;
+int REQUEST_MAX_THROUGHPUT = 100;
+
+
+// Request delay
+int REQUEST_MIN_DELAY = 80;
+int REQUEST_MAX_DELAY = 100;
+
+// Request resources
+int REQUEST_MIN_RESOURCES = 5;
+int REQUEST_MAX_RESOURCES = 10;
+
+// edge node -to- edge node delay
+int EDGE_EDGE_MIN_DELAY = 1;
+int EDGE_EDGE_MAX_DELAY = 5;
+
+// edge node -to- core node delay
+int EDGE_CORE_MIN_DELAY = 5;
+int EDGE_CORE_MAX_DELAY = 10;
+
+// core node -to- core node delay
+int CORE_CORE_MIN_DELAY = 10;
+int CORE_CORE_MAX_DELAY = 15;
+
+// float DELAY_SENSITIVE = 0.5; 
 
 struct Resources
 {
 	int cpu;
-	int mem;
-	int IO;
+	// int mem;  // not needed as of now, can be useful in the future
+	// int IO;
 };
 
 struct VNF
@@ -60,7 +86,7 @@ struct Request
 
 bool is_shareable(int id)
 {
-	if(id==0||id==1||id==2)
+	if(id==0||id==1)
 		return true;
 	else
 		return false;
@@ -71,9 +97,6 @@ struct path_info
 	float delay;
 	vector<int> path;
 };
-
-#include<vector>
-using namespace std;
 
 float interference_metric(struct Node node, pair<int, struct Resources> NF)
 {
@@ -95,7 +118,7 @@ float interference_metric(struct Node node, pair<int, struct Resources> NF)
 
 bool is_available(struct Resources r1, struct Resources r2)
 {
-	if(r1.cpu>=r2.cpu&&r1.mem>=r2.mem&&r1.IO>=r2.IO)
+	if(r1.cpu>=r2.cpu/*&&r1.mem>=r2.mem&&r1.IO>=r2.IO*/)
 		return 1;
 	else
 		return 0;
@@ -104,6 +127,6 @@ bool is_available(struct Resources r1, struct Resources r2)
 void consume_resources(struct Resources *r1, struct Resources r2)
 {
 	r1->cpu-=r2.cpu;
-	r1->mem-=r2.mem;
-	r1->IO-=r2.IO;
+	// r1->mem-=r2.mem;
+	// r1->IO-=r2.IO;
 }
