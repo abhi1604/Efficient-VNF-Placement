@@ -100,7 +100,6 @@ float algo2(vector<struct Request> requests)
 
 void serveRequests(vector<struct Request> requests)
 {
-	sort(requests.begin(), requests.end(), criteria);
  
 	// start the time here for SPH
 	auto start = high_resolution_clock::now(); 
@@ -113,6 +112,7 @@ void serveRequests(vector<struct Request> requests)
 	auto duration = duration_cast<milliseconds>(stop - start); 
 	cout<<"Time taken for SPH is "<<duration.count()<<" ms\n";
 
+	sort(requests.begin(), requests.end(), criteria);
 	// start time for cutom algo
 	auto start1 = high_resolution_clock::now(); 
 	//algo2
