@@ -5,11 +5,16 @@
 #include<map>
 #include<bits/stdc++.h>
 #include<algorithm>
+#include<chrono>
+#include<time.h> 
 #include"params.h"
 #include"dijkstra.h"
 #include"deploy.h"
 #include"multi_stage.h"
+
 using namespace std;
+using namespace std::chrono;
+
 
 vector<vector<struct LinkInfo>> graph;
 vector<int> edge_nodes;
@@ -29,23 +34,36 @@ bool criteria(struct Request request1, struct Request request2)
 	for(int i=0;i<request2.NF.size();++i)
 		resource2.cpu += request2.NF[i].second.cpu;
 
-	return (float(request1.throughput/resource1.cpu) > float(request2.throughput/resource2.cpu));
+	return (float(request1.throughput*1.0/resource1.cpu) > float(request2.throughput*1.0/resource2.cpu));
 }
 
-float algo1(vector<struct Request> requests)
+float algo1(vector<struct Request> requests)  // SPH
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
 
+	int total_throughput=0;
 	int satisfied = 0;
 	for(auto &request:requests)
 	{
 		struct path_info selected_path_info = dijkstra(request, local_graph);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		// cout<<"--------------------------------------path size-------"<<selected_path_info.path.size()<<"----------------------"<<endl;
 		if(!selected_path_info.path.empty())
-			satisfied += deployVNFS(request, selected_path_info.path, local_nodes, local_graph);
+		{
+			int temp_satisfied;
+			temp_satisfied = deployVNFS(request, selected_path_info.path, local_nodes, local_graph);
+			if(temp_satisfied==1)
+			{
+				total_throughput += request.throughput;
+				satisfied++;
+			}
+		}
 	}
-	cout<<"satisfied "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+
+	cout<<"satisfied for SPH "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	cout<<"Total throughput "<<total_throughput<<endl;
+	cout<<"Total VNFs placed with SPH is "<<VNFS_FOR_SPH<<endl;
+	stats(local_nodes);
 	return float(1.0*satisfied)/requests.size();
 }
 
@@ -55,31 +73,58 @@ float algo2(vector<struct Request> requests)
 	vector<struct Node> local_nodes(nodeInfo);
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 
+	int total_throughput=0;
 	int satisfied = 0;
 	for(auto &request:requests)
 	{
 		vector<pair<int, int>> selected_path = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		// cout<<"I am here!\n";
 		if(!selected_path.empty())
-			satisfied += deployVNFSwithInterference(request, selected_path, local_nodes, local_graph, vnfNodes);
+		{
+			int temp_satisfied;
+			temp_satisfied = deployVNFSwithInterference(request, selected_path, local_nodes, local_graph, vnfNodes);
+			if(temp_satisfied==1)
+			{
+				total_throughput += request.throughput;
+				satisfied++;
+			}
+		}
 		// cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;
 	}
-	cout<<"satisfied "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	cout<<"satisfied for algo "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	cout<<"Total throughput "<<total_throughput<<endl;
+	cout<<"Total VNFs placed with Algo is "<<VNFS_FOR_ALGO<<endl;
+	stats(local_nodes);
 	return float(1.0*satisfied)/requests.size();
 }
 
 void serveRequests(vector<struct Request> requests)
 {
-
 	sort(requests.begin(), requests.end(), criteria);
+ 
+	// start the time here for SPH
+	auto start = high_resolution_clock::now(); 
+	
 	//algo1
 	float tat1 = algo1(requests);
-	cout<<"TAT with algo1 is "<<tat1<<endl;
+	cout<<"TAT with SPH is "<<tat1<<endl;
 
+	auto stop = high_resolution_clock::now(); 
+	auto duration = duration_cast<milliseconds>(stop - start); 
+	cout<<"Time taken for SPH is "<<duration.count()<<" ms\n";
+
+	// start time for cutom algo
+	auto start1 = high_resolution_clock::now(); 
 	//algo2
 	float tat2 = algo2(requests);
-	cout<<"TAT with algo2 is "<<tat2<<endl;
+	cout<<"TAT with algo is "<<tat2<<endl;
+
+	auto stop1 = high_resolution_clock::now(); 
+	auto duration1 = duration_cast<milliseconds>(stop - start); 
+	cout<<"Time taken for algo is "<<duration1.count()<<" ms\n";
 }
+
+int MAX_REQUESTS_FROM_FILE;
 
 void processRequests()
 {
@@ -89,7 +134,7 @@ void processRequests()
 		onlyOnce--;
 		vector<struct Request> requests;
 		// create random requests here
-		for(int i=0;i<MAX_REQUESTS;++i)
+		for(int i=0;i<MAX_REQUESTS_FROM_FILE;++i)
 		{
 			// Generate and store request
 			struct Request temp;
@@ -121,8 +166,10 @@ void processRequests()
 	}
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+	srand(time(0));
+	MAX_REQUESTS_FROM_FILE = atoi(argv[1]);
 	ifstream in("input.txt");
 	if(in.is_open())
 	{
@@ -188,15 +235,15 @@ int main()
 				float delay;
 				if(e1==1&&e2==1) // both are edge nodes
 				{
-					delay = ((EDGE_EDGE_MAX_DELAY - EDGE_EDGE_MIN_DELAY) * ((float)rand() / RAND_MAX)) + EDGE_EDGE_MIN_DELAY; // within [1-5] ms				
+					delay = ((EDGE_EDGE_MAX_DELAY - EDGE_EDGE_MIN_DELAY) * ((float)rand() / RAND_MAX)) + EDGE_EDGE_MIN_DELAY; // within [1-5]  ms				
 				}
 				else if(e1==0&&e2==0)  // both are core nodes
 				{
-					delay = ((CORE_CORE_MAX_DELAY - CORE_CORE_MIN_DELAY) * ((float)rand() / RAND_MAX)) + CORE_CORE_MIN_DELAY; // within [10-15] ms				
+					delay = ((CORE_CORE_MAX_DELAY - CORE_CORE_MIN_DELAY) * ((float)rand() / RAND_MAX)) + CORE_CORE_MIN_DELAY; // within [10-15]  ms				
 				}
 				else   // one of them is edge 
 				{
-					delay = ((EDGE_CORE_MAX_DELAY - EDGE_CORE_MIN_DELAY) * ((float)rand() / RAND_MAX)) + EDGE_CORE_MIN_DELAY; // within [5-10] ms				
+					delay = ((EDGE_CORE_MAX_DELAY - EDGE_CORE_MIN_DELAY) * ((float)rand() / RAND_MAX)) + EDGE_CORE_MIN_DELAY; // within [5-10]  ms				
 				}
 				temp.node1 = node1;
 				temp.node2 = node2;

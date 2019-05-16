@@ -53,6 +53,8 @@ int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &lo
 	}
 
 	int counter=0;
+
+	VNFS_FOR_SPH+=deployed_path.size();
 	for(auto node_id:deployed_path)
 	{
 		int type = request.NF[counter].first;
@@ -148,6 +150,7 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 		}
 	}
 
+	VNFS_FOR_ALGO+=deployed_path.size();
 	counter=0;
 	for(auto node:deployed_path)
 	{

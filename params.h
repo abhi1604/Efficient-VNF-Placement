@@ -1,11 +1,15 @@
 #include<vector>
 using namespace std;
 
-int MAX_REQUESTS = 1000;
+int MAX_REQUESTS = 50;
 int EDGE_NODE = 0;
 int CORE_NODE = 1;
 int CHAIN_LENGTH = 3;
 int TYPES_AVAILABLE = 4;
+
+int CPU_TYPE = 0;
+int IO_TYPE = 1;
+int MEM_TYPE = 2;
 
 // edge node resources
 int EDGE_MIN_RESOURCES = 20;
@@ -18,7 +22,6 @@ int CORE_MAX_RESOURCES = 200;
 // request resources for a SFC
 int REQUEST_MIN_THROUGHPUT = 80;
 int REQUEST_MAX_THROUGHPUT = 100;
-
 
 // Request delay
 int REQUEST_MIN_DELAY = 80;
@@ -41,6 +44,23 @@ int CORE_CORE_MIN_DELAY = 10;
 int CORE_CORE_MAX_DELAY = 15;
 
 // float DELAY_SENSITIVE = 0.5; 
+
+// interference
+int INTERFERENCE_CPU_MEM = 0.5;
+int INTERFERENCE_CPU_CPU = 1;
+int INTERFERENCE_CPU_IO = 0.3;
+int INTERFERENCE_MEM_MEM = 1;
+int INTERFERENCE_MEM_CPU = 0.5;
+int INTERFERENCE_MEM_IO = 0.3;
+int INTERFERENCE_IO_MEM = 0.3;
+int INTERFERENCE_IO_CPU = 0.3;
+int INTERFERENCE_IO_IO = 1;
+
+
+// temp for stats purpose
+
+int VNFS_FOR_SPH=0;
+int VNFS_FOR_ALGO=0;
 
 struct Resources
 {
@@ -98,21 +118,69 @@ struct path_info
 	vector<int> path;
 };
 
+int typeofvnf(int type)
+{
+	if(type==0||type==3)
+		return CPU_TYPE;
+	else if(type==1)
+		return IO_TYPE;
+	else if(type==2)
+		return MEM_TYPE;
+}
+
 float interference_metric(struct Node node, pair<int, struct Resources> NF)
 {
 	vector<struct VNF> existing_vnf = node.existing_vnf;
+
+	float interference_with_IO_type = 0;
+	float interference_with_cpu_type = 0;
+	float interference_with_mem_type = 0;
 
 	int type = NF.first;
 	struct Resources resources = NF.second;
 
 	int total_required_cpu_resources = 0;
+	int with_mem = 0, with_cpu = 0, with_io = 0;
 	for(auto vnf: existing_vnf)
 	{
-		total_required_cpu_resources += vnf.resources.cpu;
-	}
-	total_required_cpu_resources += resources.cpu;
+		int vnf_resources = vnf.resources.cpu;
+		if(typeofvnf(vnf.type)==CPU_TYPE)
+			with_cpu += vnf_resources;
+		else if(typeofvnf(vnf.type)==MEM_TYPE)
+			with_mem += vnf_resources;
+		else if(typeofvnf(vnf.type)==IO_TYPE)
+			with_io += vnf_resources;
 
-	float interference = 1.0*total_required_cpu_resources/node.resources.cpu;
+		total_required_cpu_resources += vnf_resources;
+	}
+
+	total_required_cpu_resources += resources.cpu;
+	if(typeofvnf(type) == CPU_TYPE)
+		with_cpu += resources.cpu;
+	else if(typeofvnf(type)==MEM_TYPE)
+		with_mem += resources.cpu;
+	else if(typeofvnf(type)==IO_TYPE)
+		with_io += resources.cpu;
+
+	interference_with_mem_type = (1.0*with_mem);
+	interference_with_cpu_type = (1.0*with_cpu);
+	interference_with_IO_type = (1.0*with_io);
+
+	float interference;
+	if(typeofvnf(type) == CPU_TYPE)
+	{
+		interference = INTERFERENCE_CPU_MEM*interference_with_mem_type + INTERFERENCE_CPU_CPU*interference_with_cpu_type + INTERFERENCE_CPU_IO*interference_with_IO_type;
+	}
+	else if(typeofvnf(type) == MEM_TYPE)
+	{
+		interference = INTERFERENCE_MEM_MEM*interference_with_mem_type + INTERFERENCE_MEM_CPU*interference_with_cpu_type + INTERFERENCE_MEM_IO*interference_with_IO_type;
+	}
+	else if(typeofvnf(type) == IO_TYPE)
+	{
+		interference = INTERFERENCE_IO_MEM*interference_with_mem_type + INTERFERENCE_IO_CPU*interference_with_cpu_type + INTERFERENCE_IO_IO*interference_with_IO_type;
+	}
+
+	interference = interference*1.0/node.resources.cpu;
 	return interference;
 }
 
@@ -129,4 +197,15 @@ void consume_resources(struct Resources *r1, struct Resources r2)
 	r1->cpu-=r2.cpu;
 	// r1->mem-=r2.mem;
 	// r1->IO-=r2.IO;
+}
+
+void stats(vector<struct Node> nodes)
+{
+	int total=0;
+
+	for(auto node:nodes)
+		if(node.existing_vnf.size()>0)
+			total++;
+
+	cout<<"Total nodes activated is "<<total<<endl;
 }
