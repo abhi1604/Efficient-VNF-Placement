@@ -71,7 +71,7 @@ for i in range(len(lines)):
 			tat[algo][requests] += t 
 	
 	elif(i%6==5):
-		times = line[5]
+		times = float(line[5])
 		if(algo not in time):
 			time[algo]={}
 		if(requests not in time[algo]):
@@ -93,9 +93,37 @@ for algo in satisfied:
 
 f = open("results.log", "w")
 
-for type1 in sorted(dict.keys()):
-	f.write("type = "+str(type1)+"\n")
-	for threads in sorted(dict[type1].keys()):
-		f.write(str(threads) + "\t" + str(dict[type1][threads]) + "\n")
+for algo in sorted(satisfied.keys()):
+	f.write("satisfied algo = "+str(algo)+"\n")
+	for requests in sorted(satisfied[algo].keys()):
+		f.write(str(requests) + "\t" + str(satisfied[algo][requests]) + "\n")
+
+
+for algo in sorted(throughput.keys()):
+	f.write("thorughput algo = "+str(algo)+"\n")
+	for requests in sorted(throughput[algo].keys()):
+		f.write(str(requests) + "\t" + str(throughput[algo][requests]) + "\n")
+
+for algo in sorted(vnfs.keys()):
+	f.write("vnfs algo = "+str(algo)+"\n")
+	for requests in sorted(vnfs[algo].keys()):
+		f.write(str(requests) + "\t" + str(vnfs[algo][requests]) + "\n")
+
+for algo in sorted(nodes.keys()):
+	f.write("nodes algo = "+str(algo)+"\n")
+	for requests in sorted(nodes[algo].keys()):
+		f.write(str(requests) + "\t" + str(nodes[algo][requests]) + "\n")
+
+for algo in sorted(tat.keys()):
+	f.write("tat algo = "+str(algo)+"\n")
+	for requests in sorted(tat[algo].keys()):
+		f.write(str(requests) + "\t" + str(tat[algo][requests]) + "\n")
+
+for algo in sorted(time.keys()):
+	f.write("time algo = "+str(algo)+"\n")
+	for requests in sorted(time[algo].keys()):
+		f.write(str(requests) + "\t" + str(time[algo][requests]) + "\n")
+
+
 
 f.close()
