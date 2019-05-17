@@ -27,14 +27,13 @@ int REQUEST_MAX_THROUGHPUT = 100;
 int REQUEST_MIN_DELAY = 80;
 int REQUEST_MAX_DELAY = 100;
 
-// Request resources
-int REQUEST_MIN_RESOURCES = 1;
-int REQUEST_MAX_RESOURCES = 5;
-
-
 // VNF resources
 int VNF_MIN_RESOURCES = 5;
 int VNF_MAX_RESOURCES = 10;
+
+// Request resources
+int REQUEST_MIN_RESOURCES = 1;
+int REQUEST_MAX_RESOURCES = 5;
 
 // edge node -to- edge node delay
 int EDGE_EDGE_MIN_DELAY = 1;
@@ -66,6 +65,7 @@ int INTERFERENCE_IO_IO = 1;
 
 int VNFS_FOR_SPH=0;
 int VNFS_FOR_ALGO=0;
+int VNFS_FOR_GUS=0;
 
 struct Resources
 {

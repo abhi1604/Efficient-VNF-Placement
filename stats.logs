@@ -1,480 +1,720 @@
-satisfied for SPH 9 10  
-Total throughput 795
-Total VNFs placed with SPH is 27
-Total nodes activated is 8
-TAT with SPH is 0.9
+satisfied for SPH 10 10  
+Total throughput 896
+Total VNFs placed with SPH is 30
+Total nodes activated is 9
+TAT with SPH is 1
 Time taken for SPH is 1 ms
-satisfied for algo 9 10  
-Total throughput 795
-Total VNFs placed with Algo is 27
+satisfied for algo 10 10  
+Total throughput 896
+Total VNFs placed with Algo is 30
 Total nodes activated is 2
-TAT with algo is 0.9
-Time taken for algo is 1 ms
-satisfied for SPH 9 10  
-Total throughput 795
-Total VNFs placed with SPH is 27
-Total nodes activated is 8
-TAT with SPH is 0.9
-Time taken for SPH is 2 ms
-satisfied for algo 9 10  
-Total throughput 795
-Total VNFs placed with Algo is 27
+TAT with algo is 1
+Time taken for algo is 3 ms
+satisfied for GUS 10 10  
+Total throughput 896
+Total VNFs placed with GUS is 30
+Total nodes activated is 10
+TAT with GUS is 1
+Time taken for GUS is 1 ms
+satisfied for SPH 10 10  
+Total throughput 896
+Total VNFs placed with SPH is 30
+Total nodes activated is 9
+TAT with SPH is 1
+Time taken for SPH is 0 ms
+satisfied for algo 10 10  
+Total throughput 896
+Total VNFs placed with Algo is 30
 Total nodes activated is 2
-TAT with algo is 0.9
+TAT with algo is 1
 Time taken for algo is 2 ms
-satisfied for SPH 9 10  
-Total throughput 795
-Total VNFs placed with SPH is 27
-Total nodes activated is 8
-TAT with SPH is 0.9
+satisfied for GUS 10 10  
+Total throughput 896
+Total VNFs placed with GUS is 30
+Total nodes activated is 10
+TAT with GUS is 1
+Time taken for GUS is 0 ms
+satisfied for SPH 10 10  
+Total throughput 896
+Total VNFs placed with SPH is 30
+Total nodes activated is 9
+TAT with SPH is 1
 Time taken for SPH is 0 ms
-satisfied for algo 9 10  
-Total throughput 795
-Total VNFs placed with Algo is 27
+satisfied for algo 10 10  
+Total throughput 896
+Total VNFs placed with Algo is 30
 Total nodes activated is 2
-TAT with algo is 0.9
-Time taken for algo is 0 ms
-satisfied for SPH 9 10  
-Total throughput 795
-Total VNFs placed with SPH is 27
-Total nodes activated is 8
-TAT with SPH is 0.9
+TAT with algo is 1
+Time taken for algo is 2 ms
+satisfied for GUS 10 10  
+Total throughput 896
+Total VNFs placed with GUS is 30
+Total nodes activated is 10
+TAT with GUS is 1
+Time taken for GUS is 0 ms
+satisfied for SPH 10 10  
+Total throughput 896
+Total VNFs placed with SPH is 30
+Total nodes activated is 9
+TAT with SPH is 1
 Time taken for SPH is 0 ms
-satisfied for algo 9 10  
-Total throughput 795
-Total VNFs placed with Algo is 27
+satisfied for algo 10 10  
+Total throughput 896
+Total VNFs placed with Algo is 30
 Total nodes activated is 2
-TAT with algo is 0.9
-Time taken for algo is 0 ms
-satisfied for SPH 9 10  
-Total throughput 795
-Total VNFs placed with SPH is 27
-Total nodes activated is 8
-TAT with SPH is 0.9
+TAT with algo is 1
+Time taken for algo is 2 ms
+satisfied for GUS 10 10  
+Total throughput 896
+Total VNFs placed with GUS is 30
+Total nodes activated is 10
+TAT with GUS is 1
+Time taken for GUS is 1 ms
+satisfied for SPH 10 10  
+Total throughput 896
+Total VNFs placed with SPH is 30
+Total nodes activated is 9
+TAT with SPH is 1
 Time taken for SPH is 0 ms
-satisfied for algo 9 10  
-Total throughput 795
-Total VNFs placed with Algo is 27
+satisfied for algo 10 10  
+Total throughput 896
+Total VNFs placed with Algo is 30
 Total nodes activated is 2
-TAT with algo is 0.9
-Time taken for algo is 0 ms
-satisfied for SPH 45 50  
-Total throughput 4092
-Total VNFs placed with SPH is 135
+TAT with algo is 1
+Time taken for algo is 1 ms
+satisfied for GUS 10 10  
+Total throughput 896
+Total VNFs placed with GUS is 30
+Total nodes activated is 10
+TAT with GUS is 1
+Time taken for GUS is 0 ms
+satisfied for SPH 46 50  
+Total throughput 4178
+Total VNFs placed with SPH is 138
 Total nodes activated is 29
-TAT with SPH is 0.9
+TAT with SPH is 0.92
+Time taken for SPH is 3 ms
+satisfied for algo 47 50  
+Total throughput 4266
+Total VNFs placed with Algo is 141
+Total nodes activated is 2
+TAT with algo is 0.94
+Time taken for algo is 9 ms
+satisfied for GUS 47 50  
+Total throughput 4266
+Total VNFs placed with GUS is 141
+Total nodes activated is 34
+TAT with GUS is 0.94
+Time taken for GUS is 5 ms
+satisfied for SPH 46 50  
+Total throughput 4237
+Total VNFs placed with SPH is 138
+Total nodes activated is 29
+TAT with SPH is 0.92
 Time taken for SPH is 4 ms
-satisfied for algo 47 50  
-Total throughput 4279
-Total VNFs placed with Algo is 141
-Total nodes activated is 2
-TAT with algo is 0.94
-Time taken for algo is 4 ms
-satisfied for SPH 45 50  
-Total throughput 4092
-Total VNFs placed with SPH is 135
+satisfied for algo 48 50  
+Total throughput 4407
+Total VNFs placed with Algo is 144
+Total nodes activated is 1
+TAT with algo is 0.96
+Time taken for algo is 9 ms
+satisfied for GUS 47 50  
+Total throughput 4309
+Total VNFs placed with GUS is 141
+Total nodes activated is 33
+TAT with GUS is 0.94
+Time taken for GUS is 4 ms
+satisfied for SPH 46 50  
+Total throughput 4237
+Total VNFs placed with SPH is 138
 Total nodes activated is 29
-TAT with SPH is 0.9
+TAT with SPH is 0.92
 Time taken for SPH is 3 ms
-satisfied for algo 47 50  
-Total throughput 4279
-Total VNFs placed with Algo is 141
-Total nodes activated is 2
-TAT with algo is 0.94
-Time taken for algo is 3 ms
-satisfied for SPH 45 50  
-Total throughput 4092
-Total VNFs placed with SPH is 135
+satisfied for algo 48 50  
+Total throughput 4407
+Total VNFs placed with Algo is 144
+Total nodes activated is 1
+TAT with algo is 0.96
+Time taken for algo is 9 ms
+satisfied for GUS 47 50  
+Total throughput 4309
+Total VNFs placed with GUS is 141
+Total nodes activated is 33
+TAT with GUS is 0.94
+Time taken for GUS is 4 ms
+satisfied for SPH 46 50  
+Total throughput 4237
+Total VNFs placed with SPH is 138
 Total nodes activated is 29
-TAT with SPH is 0.9
+TAT with SPH is 0.92
 Time taken for SPH is 3 ms
-satisfied for algo 47 50  
-Total throughput 4279
-Total VNFs placed with Algo is 141
-Total nodes activated is 2
-TAT with algo is 0.94
-Time taken for algo is 3 ms
-satisfied for SPH 45 50  
-Total throughput 4092
-Total VNFs placed with SPH is 135
+satisfied for algo 48 50  
+Total throughput 4407
+Total VNFs placed with Algo is 144
+Total nodes activated is 1
+TAT with algo is 0.96
+Time taken for algo is 9 ms
+satisfied for GUS 47 50  
+Total throughput 4309
+Total VNFs placed with GUS is 141
+Total nodes activated is 33
+TAT with GUS is 0.94
+Time taken for GUS is 4 ms
+satisfied for SPH 46 50  
+Total throughput 4237
+Total VNFs placed with SPH is 138
 Total nodes activated is 29
-TAT with SPH is 0.9
+TAT with SPH is 0.92
 Time taken for SPH is 3 ms
-satisfied for algo 47 50  
-Total throughput 4279
-Total VNFs placed with Algo is 141
-Total nodes activated is 2
-TAT with algo is 0.94
-Time taken for algo is 3 ms
-satisfied for SPH 45 50  
-Total throughput 4092
-Total VNFs placed with SPH is 135
-Total nodes activated is 29
-TAT with SPH is 0.9
-Time taken for SPH is 4 ms
-satisfied for algo 47 50  
-Total throughput 4279
-Total VNFs placed with Algo is 141
-Total nodes activated is 2
-TAT with algo is 0.94
-Time taken for algo is 4 ms
-satisfied for SPH 71 100  
-Total throughput 6389
-Total VNFs placed with SPH is 213
-Total nodes activated is 38
-TAT with SPH is 0.71
+satisfied for algo 48 50  
+Total throughput 4407
+Total VNFs placed with Algo is 144
+Total nodes activated is 1
+TAT with algo is 0.96
+Time taken for algo is 10 ms
+satisfied for GUS 47 50  
+Total throughput 4309
+Total VNFs placed with GUS is 141
+Total nodes activated is 33
+TAT with GUS is 0.94
+Time taken for GUS is 4 ms
+satisfied for SPH 77 100  
+Total throughput 7071
+Total VNFs placed with SPH is 231
+Total nodes activated is 36
+TAT with SPH is 0.77
 Time taken for SPH is 6 ms
-satisfied for algo 93 100  
-Total throughput 8340
-Total VNFs placed with Algo is 279
-Total nodes activated is 2
-TAT with algo is 0.93
-Time taken for algo is 6 ms
-satisfied for SPH 71 100  
-Total throughput 6389
-Total VNFs placed with SPH is 213
-Total nodes activated is 38
-TAT with SPH is 0.71
+satisfied for algo 91 100  
+Total throughput 8335
+Total VNFs placed with Algo is 273
+Total nodes activated is 1
+TAT with algo is 0.91
+Time taken for algo is 21 ms
+satisfied for GUS 70 100  
+Total throughput 6405
+Total VNFs placed with GUS is 210
+Total nodes activated is 37
+TAT with GUS is 0.7
+Time taken for GUS is 11 ms
+satisfied for SPH 77 100  
+Total throughput 7071
+Total VNFs placed with SPH is 231
+Total nodes activated is 36
+TAT with SPH is 0.77
+Time taken for SPH is 7 ms
+satisfied for algo 91 100  
+Total throughput 8335
+Total VNFs placed with Algo is 273
+Total nodes activated is 1
+TAT with algo is 0.91
+Time taken for algo is 20 ms
+satisfied for GUS 70 100  
+Total throughput 6405
+Total VNFs placed with GUS is 210
+Total nodes activated is 37
+TAT with GUS is 0.7
+Time taken for GUS is 11 ms
+satisfied for SPH 77 100  
+Total throughput 7071
+Total VNFs placed with SPH is 231
+Total nodes activated is 36
+TAT with SPH is 0.77
+Time taken for SPH is 7 ms
+satisfied for algo 91 100  
+Total throughput 8335
+Total VNFs placed with Algo is 273
+Total nodes activated is 1
+TAT with algo is 0.91
+Time taken for algo is 20 ms
+satisfied for GUS 70 100  
+Total throughput 6405
+Total VNFs placed with GUS is 210
+Total nodes activated is 37
+TAT with GUS is 0.7
+Time taken for GUS is 10 ms
+satisfied for SPH 77 100  
+Total throughput 7071
+Total VNFs placed with SPH is 231
+Total nodes activated is 36
+TAT with SPH is 0.77
 Time taken for SPH is 8 ms
-satisfied for algo 93 100  
-Total throughput 8340
-Total VNFs placed with Algo is 279
-Total nodes activated is 2
-TAT with algo is 0.93
-Time taken for algo is 8 ms
-satisfied for SPH 71 100  
-Total throughput 6389
-Total VNFs placed with SPH is 213
-Total nodes activated is 38
-TAT with SPH is 0.71
+satisfied for algo 91 100  
+Total throughput 8335
+Total VNFs placed with Algo is 273
+Total nodes activated is 1
+TAT with algo is 0.91
+Time taken for algo is 21 ms
+satisfied for GUS 70 100  
+Total throughput 6405
+Total VNFs placed with GUS is 210
+Total nodes activated is 37
+TAT with GUS is 0.7
+Time taken for GUS is 10 ms
+satisfied for SPH 77 100  
+Total throughput 7071
+Total VNFs placed with SPH is 231
+Total nodes activated is 36
+TAT with SPH is 0.77
 Time taken for SPH is 8 ms
-satisfied for algo 93 100  
-Total throughput 8340
-Total VNFs placed with Algo is 279
-Total nodes activated is 2
-TAT with algo is 0.93
-Time taken for algo is 8 ms
-satisfied for SPH 71 100  
-Total throughput 6389
-Total VNFs placed with SPH is 213
-Total nodes activated is 38
-TAT with SPH is 0.71
-Time taken for SPH is 8 ms
-satisfied for algo 93 100  
-Total throughput 8340
-Total VNFs placed with Algo is 279
-Total nodes activated is 2
-TAT with algo is 0.93
-Time taken for algo is 8 ms
-satisfied for SPH 71 100  
-Total throughput 6389
-Total VNFs placed with SPH is 213
-Total nodes activated is 38
-TAT with SPH is 0.71
-Time taken for SPH is 8 ms
-satisfied for algo 93 100  
-Total throughput 8340
-Total VNFs placed with Algo is 279
-Total nodes activated is 2
-TAT with algo is 0.93
-Time taken for algo is 8 ms
-satisfied for SPH 94 200  
-Total throughput 8436
-Total VNFs placed with SPH is 282
+satisfied for algo 91 100  
+Total throughput 8335
+Total VNFs placed with Algo is 273
+Total nodes activated is 1
+TAT with algo is 0.91
+Time taken for algo is 20 ms
+satisfied for GUS 70 100  
+Total throughput 6405
+Total VNFs placed with GUS is 210
+Total nodes activated is 37
+TAT with GUS is 0.7
+Time taken for GUS is 11 ms
+satisfied for SPH 108 200  
+Total throughput 9914
+Total VNFs placed with SPH is 324
 Total nodes activated is 39
-TAT with SPH is 0.47
-Time taken for SPH is 18 ms
-satisfied for algo 165 200  
-Total throughput 14888
-Total VNFs placed with Algo is 495
-Total nodes activated is 2
-TAT with algo is 0.825
-Time taken for algo is 18 ms
-satisfied for SPH 94 200  
-Total throughput 8436
-Total VNFs placed with SPH is 282
-Total nodes activated is 39
-TAT with SPH is 0.47
+TAT with SPH is 0.54
 Time taken for SPH is 16 ms
 satisfied for algo 165 200  
-Total throughput 14888
+Total throughput 14965
 Total VNFs placed with Algo is 495
-Total nodes activated is 2
+Total nodes activated is 1
 TAT with algo is 0.825
-Time taken for algo is 16 ms
-satisfied for SPH 94 200  
-Total throughput 8436
-Total VNFs placed with SPH is 282
+Time taken for algo is 38 ms
+satisfied for GUS 90 200  
+Total throughput 8098
+Total VNFs placed with GUS is 270
 Total nodes activated is 39
-TAT with SPH is 0.47
-Time taken for SPH is 14 ms
+TAT with GUS is 0.45
+Time taken for GUS is 18 ms
+satisfied for SPH 108 200  
+Total throughput 9914
+Total VNFs placed with SPH is 324
+Total nodes activated is 39
+TAT with SPH is 0.54
+Time taken for SPH is 13 ms
 satisfied for algo 165 200  
-Total throughput 14888
+Total throughput 14965
 Total VNFs placed with Algo is 495
-Total nodes activated is 2
+Total nodes activated is 1
 TAT with algo is 0.825
-Time taken for algo is 14 ms
-satisfied for SPH 87 200  
-Total throughput 7778
-Total VNFs placed with SPH is 261
-Total nodes activated is 39
-TAT with SPH is 0.435
-Time taken for SPH is 13 ms
-satisfied for algo 168 200  
-Total throughput 15140
-Total VNFs placed with Algo is 504
-Total nodes activated is 2
-TAT with algo is 0.84
-Time taken for algo is 13 ms
-satisfied for SPH 87 200  
-Total throughput 7778
-Total VNFs placed with SPH is 261
-Total nodes activated is 39
-TAT with SPH is 0.435
-Time taken for SPH is 13 ms
-satisfied for algo 168 200  
-Total throughput 15140
-Total VNFs placed with Algo is 504
-Total nodes activated is 2
-TAT with algo is 0.84
-Time taken for algo is 13 ms
-satisfied for SPH 97 300  
-Total throughput 8690
-Total VNFs placed with SPH is 291
-Total nodes activated is 39
-TAT with SPH is 0.323333
-Time taken for SPH is 21 ms
-satisfied for algo 203 300  
-Total throughput 18449
-Total VNFs placed with Algo is 609
-Total nodes activated is 2
-TAT with algo is 0.676667
-Time taken for algo is 21 ms
-satisfied for SPH 97 300  
-Total throughput 8690
-Total VNFs placed with SPH is 291
-Total nodes activated is 39
-TAT with SPH is 0.323333
-Time taken for SPH is 21 ms
-satisfied for algo 203 300  
-Total throughput 18449
-Total VNFs placed with Algo is 609
-Total nodes activated is 2
-TAT with algo is 0.676667
-Time taken for algo is 21 ms
-satisfied for SPH 97 300  
-Total throughput 8690
-Total VNFs placed with SPH is 291
-Total nodes activated is 39
-TAT with SPH is 0.323333
-Time taken for SPH is 30 ms
-satisfied for algo 203 300  
-Total throughput 18449
-Total VNFs placed with Algo is 609
-Total nodes activated is 2
-TAT with algo is 0.676667
-Time taken for algo is 30 ms
-satisfied for SPH 97 300  
-Total throughput 8690
-Total VNFs placed with SPH is 291
-Total nodes activated is 39
-TAT with SPH is 0.323333
-Time taken for SPH is 22 ms
-satisfied for algo 203 300  
-Total throughput 18449
-Total VNFs placed with Algo is 609
-Total nodes activated is 2
-TAT with algo is 0.676667
-Time taken for algo is 22 ms
-satisfied for SPH 97 300  
-Total throughput 8690
-Total VNFs placed with SPH is 291
-Total nodes activated is 39
-TAT with SPH is 0.323333
-Time taken for SPH is 20 ms
-satisfied for algo 203 300  
-Total throughput 18449
-Total VNFs placed with Algo is 609
-Total nodes activated is 2
-TAT with algo is 0.676667
-Time taken for algo is 20 ms
-satisfied for SPH 105 400  
-Total throughput 9418
-Total VNFs placed with SPH is 315
-Total nodes activated is 39
-TAT with SPH is 0.2625
-Time taken for SPH is 28 ms
-satisfied for algo 199 400  
-Total throughput 18261
-Total VNFs placed with Algo is 597
-Total nodes activated is 2
-TAT with algo is 0.4975
-Time taken for algo is 28 ms
-satisfied for SPH 105 400  
-Total throughput 9418
-Total VNFs placed with SPH is 315
-Total nodes activated is 39
-TAT with SPH is 0.2625
-Time taken for SPH is 28 ms
-satisfied for algo 199 400  
-Total throughput 18261
-Total VNFs placed with Algo is 597
-Total nodes activated is 2
-TAT with algo is 0.4975
-Time taken for algo is 28 ms
-satisfied for SPH 105 400  
-Total throughput 9418
-Total VNFs placed with SPH is 315
-Total nodes activated is 39
-TAT with SPH is 0.2625
-Time taken for SPH is 35 ms
-satisfied for algo 199 400  
-Total throughput 18261
-Total VNFs placed with Algo is 597
-Total nodes activated is 2
-TAT with algo is 0.4975
 Time taken for algo is 35 ms
-satisfied for SPH 105 400  
-Total throughput 9418
-Total VNFs placed with SPH is 315
+satisfied for GUS 90 200  
+Total throughput 8098
+Total VNFs placed with GUS is 270
 Total nodes activated is 39
-TAT with SPH is 0.2625
-Time taken for SPH is 27 ms
-satisfied for algo 199 400  
-Total throughput 18261
-Total VNFs placed with Algo is 597
-Total nodes activated is 2
-TAT with algo is 0.4975
-Time taken for algo is 27 ms
-satisfied for SPH 105 400  
-Total throughput 9418
-Total VNFs placed with SPH is 315
+TAT with GUS is 0.45
+Time taken for GUS is 19 ms
+satisfied for SPH 108 200  
+Total throughput 9914
+Total VNFs placed with SPH is 324
 Total nodes activated is 39
-TAT with SPH is 0.2625
-Time taken for SPH is 27 ms
-satisfied for algo 199 400  
-Total throughput 18261
-Total VNFs placed with Algo is 597
-Total nodes activated is 2
-TAT with algo is 0.4975
-Time taken for algo is 27 ms
-satisfied for SPH 105 500  
-Total throughput 9418
-Total VNFs placed with SPH is 315
-Total nodes activated is 39
-TAT with SPH is 0.21
-Time taken for SPH is 34 ms
-satisfied for algo 211 500  
-Total throughput 19419
-Total VNFs placed with Algo is 633
-Total nodes activated is 2
-TAT with algo is 0.422
+TAT with SPH is 0.54
+Time taken for SPH is 13 ms
+satisfied for algo 165 200  
+Total throughput 14965
+Total VNFs placed with Algo is 495
+Total nodes activated is 1
+TAT with algo is 0.825
 Time taken for algo is 34 ms
-satisfied for SPH 105 500  
-Total throughput 9418
-Total VNFs placed with SPH is 315
+satisfied for GUS 90 200  
+Total throughput 8098
+Total VNFs placed with GUS is 270
 Total nodes activated is 39
-TAT with SPH is 0.21
-Time taken for SPH is 35 ms
-satisfied for algo 211 500  
-Total throughput 19419
-Total VNFs placed with Algo is 633
-Total nodes activated is 2
-TAT with algo is 0.422
-Time taken for algo is 35 ms
-satisfied for SPH 108 500  
-Total throughput 9693
+TAT with GUS is 0.45
+Time taken for GUS is 18 ms
+satisfied for SPH 108 200  
+Total throughput 9914
 Total VNFs placed with SPH is 324
 Total nodes activated is 39
-TAT with SPH is 0.216
-Time taken for SPH is 29 ms
-satisfied for algo 199 500  
-Total throughput 18144
+TAT with SPH is 0.54
+Time taken for SPH is 13 ms
+satisfied for algo 165 200  
+Total throughput 14965
+Total VNFs placed with Algo is 495
+Total nodes activated is 1
+TAT with algo is 0.825
+Time taken for algo is 34 ms
+satisfied for GUS 90 200  
+Total throughput 8098
+Total VNFs placed with GUS is 270
+Total nodes activated is 39
+TAT with GUS is 0.45
+Time taken for GUS is 17 ms
+satisfied for SPH 108 200  
+Total throughput 9914
+Total VNFs placed with SPH is 324
+Total nodes activated is 39
+TAT with SPH is 0.54
+Time taken for SPH is 13 ms
+satisfied for algo 165 200  
+Total throughput 14965
+Total VNFs placed with Algo is 495
+Total nodes activated is 1
+TAT with algo is 0.825
+Time taken for algo is 33 ms
+satisfied for GUS 90 200  
+Total throughput 8098
+Total VNFs placed with GUS is 270
+Total nodes activated is 39
+TAT with GUS is 0.45
+Time taken for GUS is 17 ms
+satisfied for SPH 107 300  
+Total throughput 9781
+Total VNFs placed with SPH is 321
+Total nodes activated is 39
+TAT with SPH is 0.356667
+Time taken for SPH is 19 ms
+satisfied for algo 199 300  
+Total throughput 17943
 Total VNFs placed with Algo is 597
 Total nodes activated is 2
-TAT with algo is 0.398
-Time taken for algo is 29 ms
-satisfied for SPH 108 500  
-Total throughput 9693
-Total VNFs placed with SPH is 324
+TAT with algo is 0.663333
+Time taken for algo is 44 ms
+satisfied for GUS 102 300  
+Total throughput 9127
+Total VNFs placed with GUS is 306
 Total nodes activated is 39
-TAT with SPH is 0.216
+TAT with GUS is 0.34
+Time taken for GUS is 27 ms
+satisfied for SPH 107 300  
+Total throughput 9781
+Total VNFs placed with SPH is 321
+Total nodes activated is 39
+TAT with SPH is 0.356667
+Time taken for SPH is 20 ms
+satisfied for algo 199 300  
+Total throughput 17943
+Total VNFs placed with Algo is 597
+Total nodes activated is 2
+TAT with algo is 0.663333
+Time taken for algo is 44 ms
+satisfied for GUS 102 300  
+Total throughput 9127
+Total VNFs placed with GUS is 306
+Total nodes activated is 39
+TAT with GUS is 0.34
+Time taken for GUS is 28 ms
+satisfied for SPH 107 300  
+Total throughput 9781
+Total VNFs placed with SPH is 321
+Total nodes activated is 39
+TAT with SPH is 0.356667
+Time taken for SPH is 19 ms
+satisfied for algo 199 300  
+Total throughput 17943
+Total VNFs placed with Algo is 597
+Total nodes activated is 2
+TAT with algo is 0.663333
+Time taken for algo is 44 ms
+satisfied for GUS 102 300  
+Total throughput 9127
+Total VNFs placed with GUS is 306
+Total nodes activated is 39
+TAT with GUS is 0.34
+Time taken for GUS is 28 ms
+satisfied for SPH 107 300  
+Total throughput 9781
+Total VNFs placed with SPH is 321
+Total nodes activated is 39
+TAT with SPH is 0.356667
+Time taken for SPH is 19 ms
+satisfied for algo 199 300  
+Total throughput 17943
+Total VNFs placed with Algo is 597
+Total nodes activated is 2
+TAT with algo is 0.663333
+Time taken for algo is 44 ms
+satisfied for GUS 102 300  
+Total throughput 9127
+Total VNFs placed with GUS is 306
+Total nodes activated is 39
+TAT with GUS is 0.34
+Time taken for GUS is 28 ms
+satisfied for SPH 115 300  
+Total throughput 10188
+Total VNFs placed with SPH is 345
+Total nodes activated is 39
+TAT with SPH is 0.383333
+Time taken for SPH is 18 ms
+satisfied for algo 195 300  
+Total throughput 17223
+Total VNFs placed with Algo is 585
+Total nodes activated is 2
+TAT with algo is 0.65
+Time taken for algo is 44 ms
+satisfied for GUS 104 300  
+Total throughput 9098
+Total VNFs placed with GUS is 312
+Total nodes activated is 39
+TAT with GUS is 0.346667
+Time taken for GUS is 27 ms
+satisfied for SPH 115 400  
+Total throughput 10219
+Total VNFs placed with SPH is 345
+Total nodes activated is 39
+TAT with SPH is 0.2875
+Time taken for SPH is 25 ms
+satisfied for algo 213 400  
+Total throughput 18796
+Total VNFs placed with Algo is 639
+Total nodes activated is 2
+TAT with algo is 0.5325
+Time taken for algo is 51 ms
+satisfied for GUS 106 400  
+Total throughput 9319
+Total VNFs placed with GUS is 318
+Total nodes activated is 39
+TAT with GUS is 0.265
+Time taken for GUS is 36 ms
+satisfied for SPH 115 400  
+Total throughput 10219
+Total VNFs placed with SPH is 345
+Total nodes activated is 39
+TAT with SPH is 0.2875
+Time taken for SPH is 26 ms
+satisfied for algo 213 400  
+Total throughput 18796
+Total VNFs placed with Algo is 639
+Total nodes activated is 2
+TAT with algo is 0.5325
+Time taken for algo is 50 ms
+satisfied for GUS 106 400  
+Total throughput 9319
+Total VNFs placed with GUS is 318
+Total nodes activated is 39
+TAT with GUS is 0.265
+Time taken for GUS is 36 ms
+satisfied for SPH 115 400  
+Total throughput 10219
+Total VNFs placed with SPH is 345
+Total nodes activated is 39
+TAT with SPH is 0.2875
+Time taken for SPH is 25 ms
+satisfied for algo 213 400  
+Total throughput 18796
+Total VNFs placed with Algo is 639
+Total nodes activated is 2
+TAT with algo is 0.5325
+Time taken for algo is 51 ms
+satisfied for GUS 106 400  
+Total throughput 9319
+Total VNFs placed with GUS is 318
+Total nodes activated is 39
+TAT with GUS is 0.265
+Time taken for GUS is 36 ms
+satisfied for SPH 115 400  
+Total throughput 10219
+Total VNFs placed with SPH is 345
+Total nodes activated is 39
+TAT with SPH is 0.2875
+Time taken for SPH is 26 ms
+satisfied for algo 213 400  
+Total throughput 18796
+Total VNFs placed with Algo is 639
+Total nodes activated is 2
+TAT with algo is 0.5325
+Time taken for algo is 51 ms
+satisfied for GUS 106 400  
+Total throughput 9319
+Total VNFs placed with GUS is 318
+Total nodes activated is 39
+TAT with GUS is 0.265
+Time taken for GUS is 36 ms
+satisfied for SPH 115 400  
+Total throughput 10219
+Total VNFs placed with SPH is 345
+Total nodes activated is 39
+TAT with SPH is 0.2875
+Time taken for SPH is 25 ms
+satisfied for algo 213 400  
+Total throughput 18796
+Total VNFs placed with Algo is 639
+Total nodes activated is 2
+TAT with algo is 0.5325
+Time taken for algo is 50 ms
+satisfied for GUS 106 400  
+Total throughput 9319
+Total VNFs placed with GUS is 318
+Total nodes activated is 39
+TAT with GUS is 0.265
+Time taken for GUS is 36 ms
+satisfied for SPH 117 500  
+Total throughput 10430
+Total VNFs placed with SPH is 351
+Total nodes activated is 39
+TAT with SPH is 0.234
 Time taken for SPH is 31 ms
-satisfied for algo 199 500  
-Total throughput 18144
-Total VNFs placed with Algo is 597
+satisfied for algo 227 500  
+Total throughput 20062
+Total VNFs placed with Algo is 681
 Total nodes activated is 2
-TAT with algo is 0.398
-Time taken for algo is 31 ms
-satisfied for SPH 108 500  
-Total throughput 9693
-Total VNFs placed with SPH is 324
+TAT with algo is 0.454
+Time taken for algo is 58 ms
+satisfied for GUS 110 500  
+Total throughput 9634
+Total VNFs placed with GUS is 330
 Total nodes activated is 39
-TAT with SPH is 0.216
-Time taken for SPH is 28 ms
-satisfied for algo 199 500  
-Total throughput 18144
-Total VNFs placed with Algo is 597
-Total nodes activated is 2
-TAT with algo is 0.398
-Time taken for algo is 28 ms
-satisfied for SPH 108 1000  
-Total throughput 9693
-Total VNFs placed with SPH is 324
+TAT with GUS is 0.22
+Time taken for GUS is 45 ms
+satisfied for SPH 117 500  
+Total throughput 10430
+Total VNFs placed with SPH is 351
 Total nodes activated is 39
-TAT with SPH is 0.108
-Time taken for SPH is 56 ms
-satisfied for algo 235 1000  
-Total throughput 21622
-Total VNFs placed with Algo is 705
+TAT with SPH is 0.234
+Time taken for SPH is 31 ms
+satisfied for algo 227 500  
+Total throughput 20062
+Total VNFs placed with Algo is 681
 Total nodes activated is 2
-TAT with algo is 0.235
+TAT with algo is 0.454
+Time taken for algo is 59 ms
+satisfied for GUS 110 500  
+Total throughput 9634
+Total VNFs placed with GUS is 330
+Total nodes activated is 39
+TAT with GUS is 0.22
+Time taken for GUS is 45 ms
+satisfied for SPH 117 500  
+Total throughput 10430
+Total VNFs placed with SPH is 351
+Total nodes activated is 39
+TAT with SPH is 0.234
+Time taken for SPH is 32 ms
+satisfied for algo 227 500  
+Total throughput 20062
+Total VNFs placed with Algo is 681
+Total nodes activated is 2
+TAT with algo is 0.454
+Time taken for algo is 59 ms
+satisfied for GUS 110 500  
+Total throughput 9634
+Total VNFs placed with GUS is 330
+Total nodes activated is 39
+TAT with GUS is 0.22
+Time taken for GUS is 47 ms
+satisfied for SPH 104 500  
+Total throughput 9341
+Total VNFs placed with SPH is 312
+Total nodes activated is 39
+TAT with SPH is 0.208
+Time taken for SPH is 31 ms
+satisfied for algo 206 500  
+Total throughput 18208
+Total VNFs placed with Algo is 618
+Total nodes activated is 2
+TAT with algo is 0.412
+Time taken for algo is 57 ms
+satisfied for GUS 96 500  
+Total throughput 8462
+Total VNFs placed with GUS is 288
+Total nodes activated is 39
+TAT with GUS is 0.192
+Time taken for GUS is 46 ms
+satisfied for SPH 104 500  
+Total throughput 9341
+Total VNFs placed with SPH is 312
+Total nodes activated is 39
+TAT with SPH is 0.208
+Time taken for SPH is 31 ms
+satisfied for algo 206 500  
+Total throughput 18208
+Total VNFs placed with Algo is 618
+Total nodes activated is 2
+TAT with algo is 0.412
 Time taken for algo is 56 ms
-satisfied for SPH 108 1000  
-Total throughput 9693
-Total VNFs placed with SPH is 324
+satisfied for GUS 96 500  
+Total throughput 8462
+Total VNFs placed with GUS is 288
 Total nodes activated is 39
-TAT with SPH is 0.108
-Time taken for SPH is 55 ms
-satisfied for algo 235 1000  
-Total throughput 21622
-Total VNFs placed with Algo is 705
-Total nodes activated is 2
-TAT with algo is 0.235
-Time taken for algo is 55 ms
-satisfied for SPH 108 1000  
-Total throughput 9693
-Total VNFs placed with SPH is 324
+TAT with GUS is 0.192
+Time taken for GUS is 47 ms
+satisfied for SPH 98 1000  
+Total throughput 8786
+Total VNFs placed with SPH is 294
 Total nodes activated is 39
-TAT with SPH is 0.108
-Time taken for SPH is 56 ms
-satisfied for algo 235 1000  
-Total throughput 21622
-Total VNFs placed with Algo is 705
+TAT with SPH is 0.098
+Time taken for SPH is 62 ms
+satisfied for algo 243 1000  
+Total throughput 21314
+Total VNFs placed with Algo is 729
 Total nodes activated is 2
-TAT with algo is 0.235
-Time taken for algo is 56 ms
-satisfied for SPH 108 1000  
-Total throughput 9693
-Total VNFs placed with SPH is 324
+TAT with algo is 0.243
+Time taken for algo is 89 ms
+satisfied for GUS 93 1000  
+Total throughput 8046
+Total VNFs placed with GUS is 279
 Total nodes activated is 39
-TAT with SPH is 0.108
-Time taken for SPH is 56 ms
-satisfied for algo 235 1000  
-Total throughput 21622
-Total VNFs placed with Algo is 705
+TAT with GUS is 0.093
+Time taken for GUS is 90 ms
+satisfied for SPH 98 1000  
+Total throughput 8786
+Total VNFs placed with SPH is 294
+Total nodes activated is 39
+TAT with SPH is 0.098
+Time taken for SPH is 62 ms
+satisfied for algo 243 1000  
+Total throughput 21314
+Total VNFs placed with Algo is 729
 Total nodes activated is 2
-TAT with algo is 0.235
-Time taken for algo is 56 ms
+TAT with algo is 0.243
+Time taken for algo is 89 ms
+satisfied for GUS 93 1000  
+Total throughput 8046
+Total VNFs placed with GUS is 279
+Total nodes activated is 39
+TAT with GUS is 0.093
+Time taken for GUS is 91 ms
+satisfied for SPH 98 1000  
+Total throughput 8786
+Total VNFs placed with SPH is 294
+Total nodes activated is 39
+TAT with SPH is 0.098
+Time taken for SPH is 64 ms
+satisfied for algo 243 1000  
+Total throughput 21314
+Total VNFs placed with Algo is 729
+Total nodes activated is 2
+TAT with algo is 0.243
+Time taken for algo is 91 ms
+satisfied for GUS 93 1000  
+Total throughput 8046
+Total VNFs placed with GUS is 279
+Total nodes activated is 39
+TAT with GUS is 0.093
+Time taken for GUS is 93 ms
 satisfied for SPH 108 1000  
-Total throughput 9693
+Total throughput 9507
 Total VNFs placed with SPH is 324
 Total nodes activated is 39
 TAT with SPH is 0.108
 Time taken for SPH is 57 ms
-satisfied for algo 235 1000  
-Total throughput 21622
-Total VNFs placed with Algo is 705
+satisfied for algo 226 1000  
+Total throughput 19717
+Total VNFs placed with Algo is 678
 Total nodes activated is 2
-TAT with algo is 0.235
-Time taken for algo is 57 ms
+TAT with algo is 0.226
+Time taken for algo is 86 ms
+satisfied for GUS 102 1000  
+Total throughput 8796
+Total VNFs placed with GUS is 306
+Total nodes activated is 39
+TAT with GUS is 0.102
+Time taken for GUS is 90 ms
+satisfied for SPH 108 1000  
+Total throughput 9507
+Total VNFs placed with SPH is 324
+Total nodes activated is 39
+TAT with SPH is 0.108
+Time taken for SPH is 58 ms
+satisfied for algo 226 1000  
+Total throughput 19717
+Total VNFs placed with Algo is 678
+Total nodes activated is 2
+TAT with algo is 0.226
+Time taken for algo is 87 ms
+satisfied for GUS 102 1000  
+Total throughput 8796
+Total VNFs placed with GUS is 306
+Total nodes activated is 39
+TAT with GUS is 0.102
+Time taken for GUS is 90 ms

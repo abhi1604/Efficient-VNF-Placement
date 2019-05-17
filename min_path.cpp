@@ -34,7 +34,7 @@ bool criteria(struct Request request1, struct Request request2)
 	for(int i=0;i<request2.NF.size();++i)
 		resource2.cpu += request2.NF[i].second.cpu;
 
-	return (float(request1.throughput*1.0/resource1.cpu) > float(request2.throughput*1.0/resource2.cpu));
+	return (float(request2.throughput*1.0/resource2.cpu) > float(request1.throughput*1.0/resource1.cpu));
 }
 
 float algo1(vector<struct Request> requests)  // SPH
@@ -98,6 +98,37 @@ float algo2(vector<struct Request> requests)
 	return float(1.0*satisfied)/requests.size();
 }
 
+
+float algo3(vector<struct Request> requests)  // SPH
+{
+	vector<vector<struct LinkInfo>> local_graph(graph);
+	vector<struct Node> local_nodes(nodeInfo);
+
+	int total_throughput=0;
+	int satisfied = 0;
+	for(auto &request:requests)
+	{
+		struct path_info selected_path_info = dijkstra(request, local_graph);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		// cout<<"--------------------------------------path size-------"<<selected_path_info.path.size()<<"----------------------"<<endl;
+		if(!selected_path_info.path.empty())
+		{
+			int temp_satisfied;
+			temp_satisfied = deployVNFSforGUS(request, selected_path_info.path, local_nodes, local_graph);
+			if(temp_satisfied==1)
+			{
+				total_throughput += request.throughput;
+				satisfied++;
+			}
+		}
+	}
+
+	cout<<"satisfied for GUS "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	cout<<"Total throughput "<<total_throughput<<endl;
+	cout<<"Total VNFs placed with GUS is "<<VNFS_FOR_GUS<<endl;
+	stats(local_nodes);
+	return float(1.0*satisfied)/requests.size();
+}
+
 void serveRequests(vector<struct Request> requests)
 {
  
@@ -112,16 +143,28 @@ void serveRequests(vector<struct Request> requests)
 	auto duration = duration_cast<milliseconds>(stop - start); 
 	cout<<"Time taken for SPH is "<<duration.count()<<" ms\n";
 
+	start = high_resolution_clock::now(); 
 	sort(requests.begin(), requests.end(), criteria);
 	// start time for cutom algo
-	auto start1 = high_resolution_clock::now(); 
 	//algo2
 	float tat2 = algo2(requests);
 	cout<<"TAT with algo is "<<tat2<<endl;
 
-	auto stop1 = high_resolution_clock::now(); 
-	auto duration1 = duration_cast<milliseconds>(stop - start); 
-	cout<<"Time taken for algo is "<<duration1.count()<<" ms\n";
+	stop = high_resolution_clock::now(); 
+	duration = duration_cast<milliseconds>(stop - start); 
+	cout<<"Time taken for algo is "<<duration.count()<<" ms\n";
+
+
+	// start time for gus
+	start = high_resolution_clock::now(); 
+
+	// gus
+	float tat3 = algo3(requests);
+	cout<<"TAT with GUS is "<<tat3<<endl;
+
+	stop = high_resolution_clock::now(); 
+	duration = duration_cast<milliseconds>(stop - start); 
+	cout<<"Time taken for GUS is "<<duration.count()<<" ms\n";
 }
 
 int MAX_REQUESTS_FROM_FILE;
