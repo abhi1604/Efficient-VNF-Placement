@@ -61,11 +61,15 @@ int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &lo
 		struct Resources resources = request.NF[counter].second;
 		counter++;
 		// deploy this nf here
-		consume_resources(&local_nodes[node_id].available_resources, resources);
+		struct Resources new_vnf_resources;
+		new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
+		consume_resources(&local_nodes[node_id].available_resources, new_vnf_resources);
 
 		struct VNF temp;
 		temp.type = type;
-		temp.resources = resources;
+		temp.resources = new_vnf_resources;
+		temp.available_resources = new_vnf_resources;
+		consume_resources(&temp.available_resources, resources);
 		local_nodes[node_id].existing_vnf.push_back(temp);
 	}
 	// }
@@ -161,8 +165,11 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 		{
 			for(auto &localvnf: local_nodes[node].existing_vnf)
 			{
-				if(localvnf.type == type)
-					consume_resources(&localvnf.resources, resources);
+				if(localvnf.type == type && is_available(localvnf.available_resources, resources))
+				{
+					consume_resources(&localvnf.available_resources, resources);
+					break;
+				}
 			}
 		}
 
@@ -170,10 +177,14 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 		{
 			if(is_shareable(type))
 				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
-			consume_resources(&local_nodes[node].available_resources, resources);
+			struct Resources new_vnf_resources;
+			new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
+			consume_resources(&local_nodes[node].available_resources, new_vnf_resources);
 			struct VNF temp;
 			temp.type = type;
-			temp.resources = resources;
+			temp.resources = new_vnf_resources;
+			temp.available_resources = new_vnf_resources;
+			consume_resources(&temp.available_resources, resources);
 			local_nodes[node].existing_vnf.push_back(temp);
 		}
 		counter++;

@@ -28,8 +28,13 @@ int REQUEST_MIN_DELAY = 80;
 int REQUEST_MAX_DELAY = 100;
 
 // Request resources
-int REQUEST_MIN_RESOURCES = 5;
-int REQUEST_MAX_RESOURCES = 10;
+int REQUEST_MIN_RESOURCES = 1;
+int REQUEST_MAX_RESOURCES = 5;
+
+
+// VNF resources
+int VNF_MIN_RESOURCES = 5;
+int VNF_MAX_RESOURCES = 10;
 
 // edge node -to- edge node delay
 int EDGE_EDGE_MIN_DELAY = 1;
@@ -74,6 +79,7 @@ struct VNF
 	int type;
 	bool shareable;
 	struct Resources resources;
+	struct Resources available_resources;
 };
 
 struct Node

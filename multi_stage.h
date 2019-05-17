@@ -19,9 +19,23 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
         struct Resources vnf_resources = request.NF[i].second;
-		if(is_shareable(vnf_type))
+		int yes=0;
+        if(is_shareable(vnf_type))
 		{
-			if(!vnfNodes[vnf_type].empty())
+            for(auto node: vnfNodes[vnf_type])
+            {
+                for(auto vnf: local_nodes[node].existing_vnf)
+                {
+                    if(vnf.type==vnf_type && is_available(vnf.available_resources, vnf_resources))  // check if the existinf vnf has enough resources to be shared
+                    {
+                        yes=1;
+                        break;
+                    }
+                }
+                if(yes==1)
+                    break;
+            }
+			if(yes==1)
 			{
 				shareable_nodes.push_back(make_pair(vnf_type, vnf_resources));
 			}
@@ -43,7 +57,7 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
         {
             for(auto vnf : local_nodes[node].existing_vnf)
             {
-                if(vnf.type==shareable_vnf && is_available(vnf.resources, resources_req))
+                if(vnf.type==shareable_vnf && is_available(vnf.available_resources, resources_req))
                     matrix[i].push_back(node); // matrix has info about where all the shareable vnf is deployed
             }
         }
