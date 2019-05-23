@@ -50,19 +50,29 @@ int CORE_CORE_MAX_DELAY = 15;
 // float DELAY_SENSITIVE = 0.5; 
 
 // interference
-int INTERFERENCE_CPU_MEM = 0.5;
-int INTERFERENCE_CPU_CPU = 1;
-int INTERFERENCE_CPU_IO = 0.3;
-int INTERFERENCE_MEM_MEM = 1;
-int INTERFERENCE_MEM_CPU = 0.5;
-int INTERFERENCE_MEM_IO = 0.3;
-int INTERFERENCE_IO_MEM = 0.3;
-int INTERFERENCE_IO_CPU = 0.3;
-int INTERFERENCE_IO_IO = 1;
+float INTERFERENCE_CPU_MEM = 0.5;
+float INTERFERENCE_CPU_CPU = 1;
+float INTERFERENCE_CPU_IO = 0.3;
+float INTERFERENCE_MEM_MEM = 1;
+float INTERFERENCE_MEM_CPU = 0.5;
+float INTERFERENCE_MEM_IO = 0.3;
+float INTERFERENCE_IO_MEM = 0.3;
+float INTERFERENCE_IO_CPU = 0.3;
+float INTERFERENCE_IO_IO = 1;
 
-
+// VNF delays
+float delay_for_vnf_type(int type)
+{
+	if(type==0)
+		return 5.5;
+	else if(type==1)
+		return 4.5;
+	else if(type==2)
+		return 2.5;
+	else if(type==3)
+		return 3.5;
+}
 // temp for stats purpose
-
 int VNFS_FOR_SPH=0;
 int VNFS_FOR_ALGO=0;
 int VNFS_FOR_GUS=0;
@@ -88,7 +98,8 @@ struct Node
 	struct Resources available_resources;		// current resources
 	struct Resources resources;					// total resources available here
 	int node_type;                // edge or cloud
-	vector<struct VNF> existing_vnf; // already deployed VNFs in this node
+	vector<pair<struct VNF, struct Request>> existing_vnf; // already deployed VNFs in this node
+	// vector<struct Request> existing_requests; // requests already being served by this Node
 };
 
 struct LinkInfo
@@ -107,6 +118,8 @@ struct Request
 	vector<pair<int, struct Resources>> NF;  // the type of VNF required and how many resources it should have
 	int throughput;   // end-end
 	float delay;     // end-end
+	float current_delay;  // actual delay with which the request is served
+	vector<int> nodes;    // nodes the VNFs are deployed on
 };
 
 
@@ -136,7 +149,7 @@ int typeofvnf(int type)
 
 float interference_metric(struct Node node, pair<int, struct Resources> NF)
 {
-	vector<struct VNF> existing_vnf = node.existing_vnf;
+	vector<pair<struct VNF, struct Request>> existing_vnf = node.existing_vnf;
 
 	float interference_with_IO_type = 0;
 	float interference_with_cpu_type = 0;
@@ -149,12 +162,12 @@ float interference_metric(struct Node node, pair<int, struct Resources> NF)
 	int with_mem = 0, with_cpu = 0, with_io = 0;
 	for(auto vnf: existing_vnf)
 	{
-		int vnf_resources = vnf.resources.cpu;
-		if(typeofvnf(vnf.type)==CPU_TYPE)
+		int vnf_resources = vnf.first.resources.cpu;
+		if(typeofvnf(vnf.first.type)==CPU_TYPE)
 			with_cpu += vnf_resources;
-		else if(typeofvnf(vnf.type)==MEM_TYPE)
+		else if(typeofvnf(vnf.first.type)==MEM_TYPE)
 			with_mem += vnf_resources;
-		else if(typeofvnf(vnf.type)==IO_TYPE)
+		else if(typeofvnf(vnf.first.type)==IO_TYPE)
 			with_io += vnf_resources;
 
 		total_required_cpu_resources += vnf_resources;
@@ -188,6 +201,18 @@ float interference_metric(struct Node node, pair<int, struct Resources> NF)
 
 	interference = interference*1.0/node.resources.cpu;
 	return interference;
+}
+
+float compute_vnf_delay(struct Request req)
+{
+	float total_vnf_delay = 0;
+
+	for(auto vnf: req.NF)
+	{
+		total_vnf_delay += delay_for_vnf_type(vnf.first);
+	}
+
+	return total_vnf_delay;
 }
 
 bool is_available(struct Resources r1, struct Resources r2)

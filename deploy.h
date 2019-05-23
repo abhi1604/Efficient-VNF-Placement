@@ -3,17 +3,16 @@
 #include <limits.h> 
 using namespace std;
 
-int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
+int deployVNFSforSPH(struct Request request, struct path_info selected_path_info, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
 {
+	vector<int> path = selected_path_info.path;
+	float current_delay = selected_path_info.delay; 
 	float delay = request.delay;
 	int src = request.source;
 	int dest = request.destination;
 	int throughput = request.throughput;
 	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
 	vector<int> deployed_path;
-
-	// if(delay<DELAY_SENSITIVE)  // means it is delay sensitive
-	// {
 
 	int curr=0;
 	for(auto vnf:NF)
@@ -75,13 +74,9 @@ int deployVNFS(struct Request request, vector<int> path, vector<struct Node> &lo
 		temp.resources = new_vnf_resources;
 		temp.available_resources = new_vnf_resources;
 		consume_resources(&temp.available_resources, resources);
-		local_nodes[node_id].existing_vnf.push_back(temp);
+		local_nodes[node_id].existing_vnf.push_back(make_pair(temp, request));
 	}
-	// }
-	// else  // if not delay sensitive
-	// {
 
-	// }
 	return 1;
 }
 
@@ -174,9 +169,9 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 		{
 			for(auto &localvnf: local_nodes[node].existing_vnf)
 			{
-				if(localvnf.type == type && is_available(localvnf.available_resources, resources))
+				if(localvnf.first.type == type && is_available(localvnf.first.available_resources, resources))
 				{
-					consume_resources(&localvnf.available_resources, resources);
+					consume_resources(&localvnf.first.available_resources, resources);
 					break;
 				}
 			}
@@ -194,7 +189,7 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 			temp.resources = new_vnf_resources;
 			temp.available_resources = new_vnf_resources;
 			consume_resources(&temp.available_resources, resources);
-			local_nodes[node].existing_vnf.push_back(temp);
+			local_nodes[node].existing_vnf.push_back(make_pair(temp, request));
 		}
 		counter++;
 	}
@@ -299,7 +294,6 @@ int deployVNFSforGUS(struct Request request, vector<int> path, vector<struct Nod
 
 	// request placed successfully here, consume resources in the path now
 	// in deployed path, path[index] will be the node where .second(vnf_type) is deployed
-
 	for(int i=0;i<deployed_path.size();++i)
 	{
 		int index_of_path_node = deployed_path[i].first;
@@ -316,7 +310,7 @@ int deployVNFSforGUS(struct Request request, vector<int> path, vector<struct Nod
 		temp.resources = new_vnf_resources;
 		temp.available_resources = new_vnf_resources;
 		consume_resources(&temp.available_resources, resources);
-		local_nodes[node_id].existing_vnf.push_back(temp);
+		local_nodes[node_id].existing_vnf.push_back(make_pair(temp, request));
 	}
 
 	// update the local graph now

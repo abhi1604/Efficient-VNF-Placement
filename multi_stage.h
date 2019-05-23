@@ -26,7 +26,7 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
             {
                 for(auto vnf: local_nodes[node].existing_vnf)
                 {
-                    if(vnf.type==vnf_type && is_available(vnf.available_resources, vnf_resources))  // check if the existinf vnf has enough resources to be shared
+                    if(vnf.first.type==vnf_type && is_available(vnf.first.available_resources, vnf_resources))  // check if the existinf vnf has enough resources to be shared
                     {
                         yes=1;
                         break;
@@ -57,14 +57,14 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
         {
             for(auto vnf : local_nodes[node].existing_vnf)
             {
-                if(vnf.type==shareable_vnf && is_available(vnf.available_resources, resources_req))
+                if(vnf.first.type==shareable_vnf && is_available(vnf.first.available_resources, resources_req))
                     matrix[i].push_back(node); // matrix has info about where all the shareable vnf is deployed
             }
         }
         counter++;
     }
 
-    vector<vector<float>> d(graph.size(), vector<float>(matrix.size(), INT_MAX));
+    vector<vector<float>> d(graph.size(), vector<float>(matrix.size(), FLT_MAX));
     vector<vector<int>> pt(graph.size(), vector<int>(matrix.size(), INT_MAX)); // INT_MAX means we have not selected a node from that stage yet
 
     for(int i=0; i<graph.size(); ++i)
@@ -82,10 +82,10 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
                 temp_request.destination = n;
                 temp_request.throughput = request.throughput;
                 temp_request.delay = request.delay;                
-                struct path_info temp = dijkstra(request, graph);
+                struct path_info temp = dijkstra(temp_request, graph);
                 float current_delay = temp.delay;
 
-                if(d[n][i-1] + current_delay < d[m][i])
+                if(current_delay!=FLT_MAX && d[n][i-1] + current_delay < d[m][i])
                 {
                     d[m][i] = d[n][i-1] + current_delay;
                     pt[m][i] = n;
@@ -96,8 +96,9 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
 
     float lat_curr = d[dest][matrix.size()-1];
 
+    float vnf_delay_here = compute_vnf_delay(request); 
     // cannot provision this request if delay is more than requirement
-    if(lat_curr > request.delay)
+    if(lat_curr +  vnf_delay_here > request.delay)
     {
         vector<pair<int, int>> temp;
         return temp;
@@ -121,7 +122,12 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
         temp_request.destination = p_nodes[i+1];
         temp_request.delay = request.delay;
         temp_request.throughput = request.throughput;
-        struct path_info temp = dijkstra(request, graph);   
+        struct path_info temp = dijkstra(temp_request, graph);  
+        if(temp.path.size()==0)
+        {
+            vector<pair<int, int>> temp;
+            return temp;
+        }
         for(int j=0; j<temp.path.size()-1; ++j)
         {
             pair<int, int> temp1;

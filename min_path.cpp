@@ -37,7 +37,7 @@ bool criteria(struct Request request1, struct Request request2)
 	return (float(request2.throughput*1.0/resource2.cpu) > float(request1.throughput*1.0/resource1.cpu));
 }
 
-float algo1(vector<struct Request> requests)  // SPH
+float SPH(vector<struct Request> requests)  // SPH
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
@@ -51,7 +51,7 @@ float algo1(vector<struct Request> requests)  // SPH
 		if(!selected_path_info.path.empty())
 		{
 			int temp_satisfied;
-			temp_satisfied = deployVNFS(request, selected_path_info.path, local_nodes, local_graph);
+			temp_satisfied = deployVNFSforSPH(request, selected_path_info, local_nodes, local_graph);
 			if(temp_satisfied==1)
 			{
 				total_throughput += request.throughput;
@@ -67,7 +67,7 @@ float algo1(vector<struct Request> requests)  // SPH
 	return float(1.0*satisfied)/requests.size();
 }
 
-float algo2(vector<struct Request> requests)
+float algo(vector<struct Request> requests)
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
@@ -99,7 +99,7 @@ float algo2(vector<struct Request> requests)
 }
 
 
-float algo3(vector<struct Request> requests)  // SPH
+float GUS(vector<struct Request> requests)  // SPH
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
@@ -135,19 +135,19 @@ void serveRequests(vector<struct Request> requests)
 	// start the time here for SPH
 	auto start = high_resolution_clock::now(); 
 	
-	//algo1
-	float tat1 = algo1(requests);
+	//SPH
+	float tat1 = SPH(requests);
 	cout<<"TAT with SPH is "<<tat1<<endl;
 
 	auto stop = high_resolution_clock::now(); 
 	auto duration = duration_cast<milliseconds>(stop - start); 
 	cout<<"Time taken for SPH is "<<duration.count()<<" ms\n";
 
+	// start time for cutom algo
 	start = high_resolution_clock::now(); 
 	sort(requests.begin(), requests.end(), criteria);
-	// start time for cutom algo
-	//algo2
-	float tat2 = algo2(requests);
+	//algo
+	float tat2 = algo(requests);
 	cout<<"TAT with algo is "<<tat2<<endl;
 
 	stop = high_resolution_clock::now(); 
@@ -159,7 +159,7 @@ void serveRequests(vector<struct Request> requests)
 	start = high_resolution_clock::now(); 
 
 	// gus
-	float tat3 = algo3(requests);
+	float tat3 = GUS(requests);
 	cout<<"TAT with GUS is "<<tat3<<endl;
 
 	stop = high_resolution_clock::now(); 

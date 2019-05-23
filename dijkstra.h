@@ -167,7 +167,7 @@ struct path_info dijkstra(struct Request request, vector<vector<struct LinkInfo>
     // Initialize min heap with all vertices. dist value of all vertices  
     for (int v = 0; v < V; ++v) 
     {
-        dist[v] = INT_MAX; 
+        dist[v] = FLT_MAX; 
         minHeap->array[v] = newMinHeapNode(v, dist[v]); 
         minHeap->pos[v] = v; 
     } 
@@ -224,12 +224,16 @@ struct path_info dijkstra(struct Request request, vector<vector<struct LinkInfo>
     // for(auto &vertex: paths[dest])
     //     cout<<vertex<<" ";
     // cout<<endl;
+    float vnf_delay = compute_vnf_delay(request);
 
-    if(dist[dest]>request.delay)
+    if(dist[dest]+vnf_delay>request.delay)
         paths[dest].clear();
 
     struct path_info selected_path;
-    selected_path.delay = dist[dest];
+    if(dist[dest]!=FLT_MAX)
+       selected_path.delay = dist[dest] + vnf_delay;
+    else
+        selected_path.delay = dist[dest];
     selected_path.path = paths[dest];
     return selected_path;
 }
