@@ -358,7 +358,7 @@ bool is_violating(struct Node node, pair<int, struct Resources> vnf)
 		interference /= node.resources.cpu;
 
 		if(interference*delay_for_vnf_type(vnf_temp.type)+current_delay>request.delay)
-			return 0;
+			return true;
 	}
-	return 1;
+	return false;
 }
