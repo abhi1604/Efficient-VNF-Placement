@@ -316,7 +316,7 @@ int remove_violated(struct Request request, vector<struct Node> &local_nodes, ve
 		total_removed += remove_violated_helper(request.NF[counter++], local_nodes[node], local_graph, local_nodes);
 	}
 
-	return total_removed;
+	return -total_removed;
 }
 
 bool is_violating(struct Node node, pair<int, struct Resources> vnf)
