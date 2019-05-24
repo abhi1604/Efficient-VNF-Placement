@@ -77,12 +77,12 @@ float algo(vector<struct Request> requests)
 	int satisfied = 0;
 	for(auto &request:requests)
 	{
-		vector<pair<int, int>> selected_path = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		// cout<<"I am here!\n";
-		if(!selected_path.empty())
+		if(!selected_path_info.path_with_type.empty())
 		{
 			int temp_satisfied;
-			temp_satisfied = deployVNFSwithInterference(request, selected_path, local_nodes, local_graph, vnfNodes);
+			temp_satisfied = deployVNFSwithInterference(request, selected_path_info, local_nodes, local_graph, vnfNodes);
 			if(temp_satisfied==1)
 			{
 				total_throughput += request.throughput;
@@ -113,7 +113,7 @@ float GUS(vector<struct Request> requests)  // SPH
 		if(!selected_path_info.path.empty())
 		{
 			int temp_satisfied;
-			temp_satisfied = deployVNFSforGUS(request, selected_path_info.path, local_nodes, local_graph);
+			temp_satisfied = deployVNFSforGUS(request, selected_path_info, local_nodes, local_graph);
 			if(temp_satisfied==1)
 			{
 				total_throughput += request.throughput;

@@ -26,6 +26,10 @@ int deployVNFSforSPH(struct Request request, struct path_info selected_path_info
 
 			if(is_available(local_nodes[node_id].available_resources, resources))
 			{
+				float interference = interference_metric(local_nodes[node_id], vnf);
+				current_delay += interference*delay_for_vnf_type(type);
+				if(current_delay>delay)                            // if delay is more than requested delay, reject the request
+					return 0;
 				deployed_path.push_back(node_id);
 				break;
 			}
@@ -73,19 +77,25 @@ int deployVNFSforSPH(struct Request request, struct path_info selected_path_info
 		temp.type = type;
 		temp.resources = new_vnf_resources;
 		temp.available_resources = new_vnf_resources;
+		request.nodes = deployed_path;
+		request.current_delay = current_delay;
 		consume_resources(&temp.available_resources, resources);
 		local_nodes[node_id].existing_vnf.push_back(make_pair(temp, request));
 	}
 
-	return 1;
+	int removed = remove_violated(request, local_nodes, local_graph);
+	return 1+removed;
 }
 
-int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> path, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, vector<int>> &vnfNodes)
+int deployVNFSwithInterference(struct Request request, struct path_info selected_path_info, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, vector<int>> &vnfNodes)
 {
+	vector<pair<int, int>> path = selected_path_info.path_with_type;
 	int throughput = request.throughput;
 	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
 	vector<int> deployed_path;
 	map<int, int> shareable_vnf_deployed;
+	float current_delay = selected_path_info.delay;
+	float delay = request.delay;
 
 	vector<int> shareable_id;
 	for(int i=0; i<path.size(); ++i)
@@ -105,6 +115,10 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 			counter++;
 			node1 = node2;
 			node2 = shareable_id[counter];
+			if(is_violating(local_nodes[node1], request.NF[i]))  // if current request violates SLA of already deployed rquests, reject this
+				return 0;
+			float interference = interference_metric(local_nodes[node1], request.NF[i]);
+			current_delay += interference*delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(node1);
 		}
 		else
@@ -115,9 +129,9 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 			for(int j=node1; j<=node2; ++j)
 			{
 				int path_node_id = path[j].first; 
-				// compute interference of vnf_type with node with id path[j] here and update minInterference
 				if(is_available(local_nodes[path_node_id].available_resources, resources)) // consider only if the node has sufficient resources
 				{
+					// compute interference of vnf_type with node with id path[j] here and update minInterference
 					float temp = interference_metric(local_nodes[path_node_id], request.NF[i]);
 					if(minInterference > temp)
 					{
@@ -136,8 +150,14 @@ int deployVNFSwithInterference(struct Request request, vector<pair<int, int>> pa
 			{
 				shareable_vnf_deployed[vnf_type] = minInterferenceNodeId;
 			}
+			if(is_violating(local_nodes[minInterferenceNodeId], request.NF[i])) // if current request violates SLA of already deployed rquests, reject this
+				return 0;
+			float interference = interference_metric(local_nodes[minInterferenceNodeId], request.NF[i]);
+			current_delay += interference*delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(minInterferenceNodeId);
 		}
+		if(current_delay>delay)
+			return 0;
     }
 
 	// request placed successfully here!
@@ -207,14 +227,17 @@ bool criteria1(pair<int, struct Node> n1, pair<int, struct Node> n2)
 	return(float(available_resources2*1.0/resources2) < float(available_resources1*1.0/resources1));
 }
 
-int deployVNFSforGUS(struct Request request, vector<int> path, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
+int deployVNFSforGUS(struct Request request, struct path_info selected_path_info, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
 {
+	vector<int> path = selected_path_info.path;
 	float delay = request.delay;
 	int src = request.source;
 	int dest = request.destination;
 	int throughput = request.throughput;
 	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
 	vector<pair<int, struct Node>> most_loaded;  // will store index of path, node id
+
+	float current_delay = 0;
 
 	vector<float> path_delays;  // it stores the path delays between consecutive nodes in the path
 
@@ -255,6 +278,8 @@ int deployVNFSforGUS(struct Request request, vector<int> path, vector<struct Nod
 		{
 			if(is_available(node.second.available_resources, resources))
 			{
+				float interference = interference_metric(local_nodes[node.second.id], vnf);
+				current_delay += interference*(1+delay_for_vnf_type(type));  // 1+ because we haven't yet considered vnf_delay for GUS
 				deployed_path.push_back(make_pair(node.first, type));
 				is_deployed = 1;
 				consume_resources(&node.second.available_resources, resources);
@@ -267,7 +292,7 @@ int deployVNFSforGUS(struct Request request, vector<int> path, vector<struct Nod
 
 	// check if the deployed path taken can satisfy the delay requirement
 
-	float total_delay=0;
+	float total_delay=current_delay;
 
 	for(int i=0; i<deployed_path.size()-1; ++i)
 	{
@@ -310,6 +335,9 @@ int deployVNFSforGUS(struct Request request, vector<int> path, vector<struct Nod
 		temp.resources = new_vnf_resources;
 		temp.available_resources = new_vnf_resources;
 		consume_resources(&temp.available_resources, resources);
+		request.current_delay=current_delay;
+		for(auto nodes:deployed_path)
+			request.nodes.push_back(path[nodes.first]);
 		local_nodes[node_id].existing_vnf.push_back(make_pair(temp, request));
 	}
 
@@ -336,5 +364,6 @@ int deployVNFSforGUS(struct Request request, vector<int> path, vector<struct Nod
 		}
 	}
 
-	return 1;
+	int removed = remove_violated(request, local_nodes, local_graph);
+	return 1+removed;
 }

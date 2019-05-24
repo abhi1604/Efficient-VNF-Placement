@@ -3,7 +3,7 @@
 #include <limits.h> 
 using namespace std;
 
-vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct LinkInfo>> graph, map<int, vector<int>> vnfNodes, vector<struct Node> local_nodes)
+struct path_info multi_stage(struct Request request, vector<vector<struct LinkInfo>> graph, map<int, vector<int>> vnfNodes, vector<struct Node> local_nodes)
 {
     // request has source, destination, NF{vector<pair<int, struct Resources>>}, throughput, delay 
     int V = graph.size();// Get the number of vertices in graph 
@@ -100,8 +100,10 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
     // cannot provision this request if delay is more than requirement
     if(lat_curr +  vnf_delay_here > request.delay)
     {
+        struct path_info selected_path_info;
         vector<pair<int, int>> temp;
-        return temp;
+        selected_path_info.path_with_type = temp;
+        return selected_path_info;
     }
 
     vector<int> p_nodes; // a path containing only shareable nodes including src and dest
@@ -125,8 +127,10 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
         struct path_info temp = dijkstra(temp_request, graph);  
         if(temp.path.size()==0)
         {
+            struct path_info selected_path_info;
             vector<pair<int, int>> temp;
-            return temp;
+            selected_path_info.path_with_type = temp;
+            return selected_path_info;
         }
         for(int j=0; j<temp.path.size()-1; ++j)
         {
@@ -141,9 +145,16 @@ vector<pair<int, int>> multi_stage(struct Request request, vector<vector<struct 
             complete_path.push_back(temp1);
         }
     }
+    float total_delay = lat_curr+vnf_delay_here;
+
+
     pair<int, int> temp1;
     temp1.first = dest;
     temp1.second = -2;
     complete_path.push_back(temp1);
-    return complete_path;
+
+    struct path_info selected_path_info;
+    selected_path_info.delay = total_delay;
+    selected_path_info.path_with_type = complete_path;
+    return selected_path_info;
 }

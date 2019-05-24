@@ -135,6 +135,7 @@ struct path_info
 {
 	float delay;
 	vector<int> path;
+	vector<pair<int, int>> path_with_type; // for multi stage, for knowing shareability info 
 };
 
 int typeofvnf(int type)
@@ -239,4 +240,125 @@ void stats(vector<struct Node> nodes)
 			total++;
 
 	cout<<"Total nodes activated is "<<total<<endl;
+}
+
+void remove_request(struct Request request, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
+{
+	int counter=0;
+	for(auto node: request.nodes)
+	{
+		pair<int, struct Resources> vnf = request.NF[counter++];
+		struct Node l_node = local_nodes[node];
+		int remove_temp_counter=0;
+		for(auto &e_vnf: l_node.existing_vnf)
+		{
+			if(e_vnf.first.type == vnf.first && e_vnf.first.resources.cpu == vnf.second.cpu) // remove this vnf from the node
+			{
+				l_node.existing_vnf.erase(l_node.existing_vnf.begin()+remove_temp_counter);
+				l_node.available_resources.cpu += vnf.second.cpu;  // this nodes gets its resources back
+				break;
+			}
+			remove_temp_counter++;
+		}
+	}
+
+	// request removed successfully here!
+	// update the local graph now
+	for(int i=0; i<request.nodes.size()-1; ++i)
+	{
+		int node1 = request.nodes[i];
+		int node2 = request.nodes[i+1];
+		for(auto &edges: local_graph[node1])  // search for the required edge
+		{
+			if(edges.node2==node2)
+				edges.available_bandwidth += request.throughput;
+		}
+		for(auto &edges: local_graph[node2])  // search for the required edge
+		{
+			if(edges.node1==node1)
+				edges.available_bandwidth -= request.throughput;
+		}
+	}
+	// done
+}
+
+int remove_violated_helper(pair<int, struct Resources> vnf, struct Node &node, vector<vector<struct LinkInfo>> &local_graph, vector<struct Node> &local_nodes)
+{
+	int total_removed = 0;
+	float incremental_interference = vnf.second.cpu*1.0/node.resources.cpu;
+
+	for(auto &existing_req: node.existing_vnf)
+	{
+		struct VNF vnf_temp = existing_req.first;
+		struct Request req_temp = existing_req.second;
+		float new_delay = delay_for_vnf_type(vnf_temp.type)*incremental_interference + req_temp.current_delay;
+		if( new_delay > req_temp.delay)
+		{
+			remove_request(req_temp, local_nodes, local_graph);
+			total_removed++;
+		}
+		else
+		{
+			req_temp.current_delay = new_delay;
+		}
+	}
+	return total_removed;
+}
+
+int remove_violated(struct Request request, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
+{
+	vector<int> nodes = request.nodes;
+
+	int total_removed = 0;
+	int counter = 0;
+	for(auto node: nodes)
+	{
+		total_removed += remove_violated_helper(request.NF[counter++], local_nodes[node], local_graph, local_nodes);
+	}
+
+	return total_removed;
+}
+
+bool is_violating(struct Node node, pair<int, struct Resources> vnf)
+{
+	for(auto vnf_request: node.existing_vnf)
+	{
+		struct VNF vnf_temp = vnf_request.first;
+		struct Request request = vnf_request.second;
+		float current_delay = request.current_delay;
+		float interference=0; 
+		float with_mem=0, with_cpu=0, with_io=0;
+
+		if(typeofvnf(vnf_temp.type)==CPU_TYPE)
+		{
+			with_cpu = vnf.second.cpu;
+		}
+		else if(typeofvnf(vnf_temp.type)==MEM_TYPE)
+		{
+			with_mem = vnf.second.cpu;
+		}
+		else if(typeofvnf(vnf_temp.type)==IO_TYPE)
+		{
+			with_io = vnf.second.cpu;
+		}
+
+		if(typeofvnf(vnf.first)==CPU_TYPE)
+		{
+			interference += INTERFERENCE_CPU_CPU*with_cpu + INTERFERENCE_CPU_MEM*with_mem + INTERFERENCE_CPU_IO*with_io;
+		}
+		else if(typeofvnf(vnf.first)==MEM_TYPE)
+		{
+			interference += INTERFERENCE_MEM_CPU*with_cpu + INTERFERENCE_MEM_MEM*with_mem + INTERFERENCE_MEM_IO*with_io;
+		}
+		else if(typeofvnf(vnf.first)==IO_TYPE)
+		{
+			interference += INTERFERENCE_IO_CPU*with_cpu + INTERFERENCE_IO_MEM*with_mem + INTERFERENCE_IO_IO*with_io;
+		}
+
+		interference /= node.resources.cpu;
+
+		if(interference*delay_for_vnf_type(vnf_temp.type)+current_delay>request.delay)
+			return 0;
+	}
+	return 1;
 }
