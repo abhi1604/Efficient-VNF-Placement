@@ -198,7 +198,7 @@ struct path_info dijkstra(struct Request request, vector<vector<struct LinkInfo>
   
             // If shortest distance to v is not finalized yet, and distance to v 
             // through u is less than its previously calculated distance and u-v link throughput is not a bottleneck for us
-            if (isInMinHeap(minHeap, v) && dist[u] != INT_MAX &&  
+            if (isInMinHeap(minHeap, v) && dist[u] != FLT_MAX &&  
                                           pCrawl.delay + dist[u] < dist[v] && pCrawl.available_bandwidth >= throughput) 
             { 
                 paths[v].clear(); // clear the path to the destination node, add the nodes from the node just visited

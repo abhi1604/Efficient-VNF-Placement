@@ -41,21 +41,23 @@ float SPH(vector<struct Request> requests)  // SPH
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
+	map<int, struct Request> map_request;
 
 	int total_throughput=0;
 	int satisfied = 0;
 	for(auto &request:requests)
 	{
+		map_request[request.request_id] = request;
 		struct path_info selected_path_info = dijkstra(request, local_graph);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		// cout<<"--------------------------------------path size-------"<<selected_path_info.path.size()<<"----------------------"<<endl;
 		if(!selected_path_info.path.empty())
 		{
 			int temp_satisfied;
-			temp_satisfied = deployVNFSforSPH(request, selected_path_info, local_nodes, local_graph);
-			if(temp_satisfied==1)
+			temp_satisfied = deployVNFSforSPH(request, selected_path_info, local_nodes, local_graph, map_request);
+			if(temp_satisfied!=0)
 			{
 				total_throughput += request.throughput;
-				satisfied++;
+				satisfied+=temp_satisfied;
 			}
 		}
 	}
@@ -72,21 +74,23 @@ float algo(vector<struct Request> requests)
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
+	map<int, struct Request> map_request;
 
 	int total_throughput=0;
 	int satisfied = 0;
 	for(auto &request:requests)
 	{
+		map_request[request.request_id] = request;
 		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		// cout<<"I am here!\n";
 		if(!selected_path_info.path_with_type.empty())
 		{
 			int temp_satisfied;
-			temp_satisfied = deployVNFSwithInterference(request, selected_path_info, local_nodes, local_graph, vnfNodes);
-			if(temp_satisfied==1)
+			temp_satisfied = deployVNFSwithInterference(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
+			if(temp_satisfied!=0)
 			{
 				total_throughput += request.throughput;
-				satisfied++;
+				satisfied+=temp_satisfied;
 			}
 		}
 		// cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;
@@ -104,20 +108,24 @@ float GUS(vector<struct Request> requests)  // SPH
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
 
+	map<int, struct Request> map_request;
+
 	int total_throughput=0;
 	int satisfied = 0;
+
 	for(auto &request:requests)
 	{
+		map_request[request.request_id] = request;
 		struct path_info selected_path_info = dijkstra(request, local_graph);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		// cout<<"--------------------------------------path size-------"<<selected_path_info.path.size()<<"----------------------"<<endl;
 		if(!selected_path_info.path.empty())
 		{
 			int temp_satisfied;
-			temp_satisfied = deployVNFSforGUS(request, selected_path_info, local_nodes, local_graph);
-			if(temp_satisfied==1)
+			temp_satisfied = deployVNFSforGUS(request, selected_path_info, local_nodes, local_graph, map_request);
+			if(temp_satisfied!=0)
 			{
 				total_throughput += request.throughput;
-				satisfied++;
+				satisfied+=temp_satisfied;
 			}
 		}
 	}
@@ -192,7 +200,7 @@ void processRequests()
 			temp.delay = delay;
 			// temp.throughput = REQUEST_THROUGHPUT[rand()%REQUEST_THROUGHPUT.size()];
 			temp.throughput = ((REQUEST_MAX_THROUGHPUT - REQUEST_MIN_THROUGHPUT) * ((float)rand() / RAND_MAX)) + REQUEST_MIN_THROUGHPUT;
-			
+			temp.request_id = i;
 			// Filling the request
 			for(int j=0;j<chain_length;++j)
 			{

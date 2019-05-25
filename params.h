@@ -98,7 +98,7 @@ struct Node
 	struct Resources available_resources;		// current resources
 	struct Resources resources;					// total resources available here
 	int node_type;                // edge or cloud
-	vector<pair<struct VNF, struct Request>> existing_vnf; // already deployed VNFs in this node
+	vector<pair<struct VNF, int>> existing_vnf; // already deployed VNFs in this node
 	// vector<struct Request> existing_requests; // requests already being served by this Node
 };
 
@@ -113,6 +113,7 @@ struct LinkInfo
 
 struct Request
 {
+	int request_id;
 	int source;
 	int destination;
 	vector<pair<int, struct Resources>> NF;  // the type of VNF required and how many resources it should have
@@ -150,7 +151,7 @@ int typeofvnf(int type)
 
 float interference_metric(struct Node node, pair<int, struct Resources> NF)
 {
-	vector<pair<struct VNF, struct Request>> existing_vnf = node.existing_vnf;
+	vector<pair<struct VNF, int>> existing_vnf = node.existing_vnf;
 
 	float interference_with_IO_type = 0;
 	float interference_with_cpu_type = 0;
@@ -242,20 +243,20 @@ void stats(vector<struct Node> nodes)
 	cout<<"Total nodes activated is "<<total<<endl;
 }
 
-void remove_request(struct Request request, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
+void remove_request(int request_id, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, struct Request> &map_request)
 {
 	int counter=0;
-	for(auto node: request.nodes)
+	for(auto node: map_request[request_id].nodes)
 	{
-		pair<int, struct Resources> vnf = request.NF[counter++];
-		struct Node l_node = local_nodes[node];
+		pair<int, struct Resources> vnf = map_request[request_id].NF[counter++];
+		// struct Node l_node = local_nodes[node];
 		int remove_temp_counter=0;
-		for(auto &e_vnf: l_node.existing_vnf)
+		for(auto &e_vnf: local_nodes[node].existing_vnf)
 		{
 			if(e_vnf.first.type == vnf.first && e_vnf.first.resources.cpu == vnf.second.cpu) // remove this vnf from the node
 			{
-				l_node.existing_vnf.erase(l_node.existing_vnf.begin()+remove_temp_counter);
-				l_node.available_resources.cpu += vnf.second.cpu;  // this nodes gets its resources back
+				local_nodes[node].existing_vnf.erase(local_nodes[node].existing_vnf.begin()+remove_temp_counter);
+				local_nodes[node].available_resources.cpu += vnf.second.cpu;  // this nodes gets its resources back
 				break;
 			}
 			remove_temp_counter++;
@@ -264,25 +265,25 @@ void remove_request(struct Request request, vector<struct Node> &local_nodes, ve
 
 	// request removed successfully here!
 	// update the local graph now
-	for(int i=0; i<request.nodes.size()-1; ++i)
+	for(int i=0; i<map_request[request_id].nodes.size()-1; ++i)
 	{
-		int node1 = request.nodes[i];
-		int node2 = request.nodes[i+1];
+		int node1 = map_request[request_id].nodes[i];
+		int node2 = map_request[request_id].nodes[i+1];
 		for(auto &edges: local_graph[node1])  // search for the required edge
 		{
 			if(edges.node2==node2)
-				edges.available_bandwidth += request.throughput;
+				edges.available_bandwidth += map_request[request_id].throughput;
 		}
 		for(auto &edges: local_graph[node2])  // search for the required edge
 		{
 			if(edges.node1==node1)
-				edges.available_bandwidth -= request.throughput;
+				edges.available_bandwidth -= map_request[request_id].throughput;
 		}
 	}
 	// done
 }
 
-int remove_violated_helper(pair<int, struct Resources> vnf, struct Node &node, vector<vector<struct LinkInfo>> &local_graph, vector<struct Node> &local_nodes)
+int remove_violated_helper(pair<int, struct Resources> vnf, struct Node &node, vector<vector<struct LinkInfo>> &local_graph, vector<struct Node> &local_nodes, map<int, struct Request> &map_request)
 {
 	int total_removed = 0;
 	float incremental_interference = vnf.second.cpu*1.0/node.resources.cpu;
@@ -290,42 +291,42 @@ int remove_violated_helper(pair<int, struct Resources> vnf, struct Node &node, v
 	for(auto &existing_req: node.existing_vnf)
 	{
 		struct VNF vnf_temp = existing_req.first;
-		struct Request req_temp = existing_req.second;
-		float new_delay = delay_for_vnf_type(vnf_temp.type)*incremental_interference + req_temp.current_delay;
-		if( new_delay > req_temp.delay)
+		int req_temp_id = existing_req.second;
+		float new_delay = delay_for_vnf_type(vnf_temp.type)*incremental_interference + map_request[req_temp_id].current_delay;
+		if( new_delay > map_request[req_temp_id].delay)  // check whether the new request is violating any request already passing throught this node
 		{
-			remove_request(req_temp, local_nodes, local_graph);
+			remove_request(req_temp_id, local_nodes, local_graph, map_request);
 			total_removed++;
 		}
-		else
+		else // update the existing requests delay here otherwise
 		{
-			req_temp.current_delay = new_delay;
+			map_request[req_temp_id].current_delay = new_delay;
 		}
 	}
 	return total_removed;
 }
 
-int remove_violated(struct Request request, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph)
+int remove_violated(struct Request request, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, struct Request> &map_request)
 {
-	vector<int> nodes = request.nodes;
+	vector<int> nodes = map_request[request.request_id].nodes;
 
 	int total_removed = 0;
 	int counter = 0;
 	for(auto node: nodes)
 	{
-		total_removed += remove_violated_helper(request.NF[counter++], local_nodes[node], local_graph, local_nodes);
+		total_removed += remove_violated_helper(request.NF[counter++], local_nodes[node], local_graph, local_nodes, map_request);
 	}
 
 	return -total_removed;
 }
 
-bool is_violating(struct Node node, pair<int, struct Resources> vnf)
+bool is_violating(struct Node node, pair<int, struct Resources> vnf, map<int, struct Request> &map_request)
 {
 	for(auto vnf_request: node.existing_vnf)
 	{
 		struct VNF vnf_temp = vnf_request.first;
-		struct Request request = vnf_request.second;
-		float current_delay = request.current_delay;
+		int request_id = vnf_request.second;
+		float current_delay = map_request[request_id].current_delay;
 		float interference=0; 
 		float with_mem=0, with_cpu=0, with_io=0;
 
@@ -357,7 +358,7 @@ bool is_violating(struct Node node, pair<int, struct Resources> vnf)
 
 		interference /= node.resources.cpu;
 
-		if(interference*delay_for_vnf_type(vnf_temp.type)+current_delay>request.delay)
+		if(interference*delay_for_vnf_type(vnf_temp.type)+current_delay>map_request[request_id].delay)
 			return true;
 	}
 	return false;
