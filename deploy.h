@@ -84,7 +84,7 @@ int deployVNFSforSPH(struct Request request, struct path_info selected_path_info
 	}
 
 	int removed = remove_violated(request, local_nodes, local_graph, map_request);
-	return 1+removed;
+	return 1-removed;
 }
 
 int deployVNFSwithInterference(struct Request request, struct path_info selected_path_info, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, vector<int>> &vnfNodes, map<int, struct Request> &map_request)
@@ -217,7 +217,7 @@ int deployVNFSwithInterference(struct Request request, struct path_info selected
 	return 1;
 }
 
-bool criteria1(pair<int, struct Node> n1, pair<int, struct Node> n2)
+bool most_loaded_criteria(pair<int, struct Node> n1, pair<int, struct Node> n2)
 {
 	int resources1 = n1.second.resources.cpu;
 	int resources2 = n2.second.resources.cpu;
@@ -264,7 +264,7 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 		most_loaded.push_back(make_pair(i, temp_nodes[path[i]]));
 	}
 
-	sort(most_loaded.begin(), most_loaded.end(), criteria1);
+	sort(most_loaded.begin(), most_loaded.end(), most_loaded_criteria);
 
 	vector<pair<int, int>> deployed_path; // will store index of the path, vnf type deployed
 
@@ -278,7 +278,7 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 			if(is_available(node.second.available_resources, resources))
 			{
 				float interference = interference_metric(local_nodes[node.second.id], vnf);
-				current_delay += interference*(1+delay_for_vnf_type(type));  // 1+ because we haven't yet considered vnf_delay for GUS
+				current_delay += (1+interference)*delay_for_vnf_type(type)*1.0;  // 1+ to consider both vnf delay and interference delay
 				deployed_path.push_back(make_pair(node.first, type));
 				is_deployed = 1;
 				consume_resources(&node.second.available_resources, resources);
@@ -364,5 +364,5 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 	}
 
 	int removed = remove_violated(request, local_nodes, local_graph, map_request);
-	return 1+removed;
+	return 1-removed;
 }

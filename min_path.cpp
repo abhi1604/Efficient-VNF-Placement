@@ -122,10 +122,10 @@ float GUS(vector<struct Request> requests)  // SPH
 		{
 			int temp_satisfied;
 			temp_satisfied = deployVNFSforGUS(request, selected_path_info, local_nodes, local_graph, map_request);
-			if(temp_satisfied!=0)
+			if(temp_satisfied==1)
 			{
 				total_throughput += request.throughput;
-				satisfied+=temp_satisfied;
+				satisfied++;
 			}
 		}
 	}

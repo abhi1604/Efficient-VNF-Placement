@@ -248,7 +248,7 @@ void remove_request(int request_id, vector<struct Node> &local_nodes, vector<vec
 	int counter=0;
 	for(auto node: map_request[request_id].nodes)
 	{
-		pair<int, struct Resources> vnf = map_request[request_id].NF[counter++];
+		pair<int, struct Resources> vnf = map_request[request_id].NF[counter];
 		// struct Node l_node = local_nodes[node];
 		int remove_temp_counter=0;
 		for(auto &e_vnf: local_nodes[node].existing_vnf)
@@ -261,6 +261,7 @@ void remove_request(int request_id, vector<struct Node> &local_nodes, vector<vec
 			}
 			remove_temp_counter++;
 		}
+		counter++;
 	}
 
 	// request removed successfully here!
@@ -277,18 +278,18 @@ void remove_request(int request_id, vector<struct Node> &local_nodes, vector<vec
 		for(auto &edges: local_graph[node2])  // search for the required edge
 		{
 			if(edges.node1==node1)
-				edges.available_bandwidth -= map_request[request_id].throughput;
+				edges.available_bandwidth += map_request[request_id].throughput;
 		}
 	}
 	// done
 }
 
-int remove_violated_helper(pair<int, struct Resources> vnf, struct Node &node, vector<vector<struct LinkInfo>> &local_graph, vector<struct Node> &local_nodes, map<int, struct Request> &map_request)
+int remove_violated_helper(pair<int, struct Resources> vnf, int node_id, vector<vector<struct LinkInfo>> &local_graph, vector<struct Node> &local_nodes, map<int, struct Request> &map_request)
 {
 	int total_removed = 0;
-	float incremental_interference = vnf.second.cpu*1.0/node.resources.cpu;
+	float incremental_interference = vnf.second.cpu*1.0/local_nodes[node_id].resources.cpu;
 
-	for(auto &existing_req: node.existing_vnf)
+	for(auto &existing_req: local_nodes[node_id].existing_vnf)
 	{
 		struct VNF vnf_temp = existing_req.first;
 		int req_temp_id = existing_req.second;
@@ -312,12 +313,12 @@ int remove_violated(struct Request request, vector<struct Node> &local_nodes, ve
 
 	int total_removed = 0;
 	int counter = 0;
-	for(auto node: nodes)
+	for(auto node_id: nodes)
 	{
-		total_removed += remove_violated_helper(request.NF[counter++], local_nodes[node], local_graph, local_nodes, map_request);
+		total_removed += remove_violated_helper(request.NF[counter++], node_id, local_graph, local_nodes, map_request);
 	}
 
-	return -total_removed;
+	return total_removed;
 }
 
 bool is_violating(struct Node node, pair<int, struct Resources> vnf, map<int, struct Request> &map_request)

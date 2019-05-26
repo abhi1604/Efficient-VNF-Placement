@@ -193,7 +193,7 @@ struct path_info dijkstra(struct Request request, vector<vector<struct LinkInfo>
         // Traverse through all adjacent vertices of u (the extracted 
         // vertex) and update their distance values  
         for(auto pCrawl : graph[u]) 
-        { 
+        {
             int v = pCrawl.node2; 
   
             // If shortest distance to v is not finalized yet, and distance to v 
