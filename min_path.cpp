@@ -212,7 +212,6 @@ void processRequests()
 			}
 			requests.push_back(temp);
 		}
-	
 		serveRequests(requests);
 	}
 }

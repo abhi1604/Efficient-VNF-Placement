@@ -63,14 +63,14 @@ float INTERFERENCE_IO_IO = 1;
 // VNF delays
 float delay_for_vnf_type(int type)
 {
-	if(type==0)
-		return 5.5;
-	else if(type==1)
-		return 4.5;
-	else if(type==2)
-		return 2.5;
-	else if(type==3)
-		return 3.5;
+	if(type==0)    // type 1
+		return 5.5;  // in ms
+	else if(type==1)  // type 2 
+		return 4.5;  // in ms
+	else if(type==2) // type 3
+		return 2.5;  // 2.5 ms
+	else if(type==3)  // type 4
+		return 3.5;   // 3.5ms
 }
 // temp for stats purpose
 int VNFS_FOR_SPH=0;
