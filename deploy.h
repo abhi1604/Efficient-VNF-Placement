@@ -341,14 +341,23 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 			{
 				path_delays.push_back(link.delay);
 				break;
-			}	
+			}
 		}
 	}
 
 	vector<pair<int, int>> deployed_path; // will store index of the path, vnf type deployed
 
-	int path_node1_id = shareable_id[1], path_node2_id = shareable_id[1];  // because 0 is the source and the shareable types start from 1
+	// will store index of path, node id
+	for(int i=0;i<path.size(); ++i)
+	{
+		most_loaded.push_back(make_pair(i, temp_nodes[path[i].first]));
+	}
+	
+	sort(most_loaded.begin(), most_loaded.end(), most_loaded_criteria);
+
+	int path_node1_id = shareable_id[1];  // because 0 is the source and the shareable types start from 1
 	int counter = 1; // not 0, because it is the source
+
     for(int i=0; i<request.NF.size(); ++i)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
@@ -356,39 +365,35 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 		if(is_shareable(vnf_type) && path[path_node1_id].second==vnf_type)
 		{
 			if(is_violating(local_nodes[path[path_node1_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
+			{
+				cout<<"From 1\n\n";
 				return 0;
+			}
 			
 			float interference = interference_metric(local_nodes[path[path_node1_id].first], request.NF[i]);
 			throughput_interference.push_back(interference);
 			current_delay += interference*delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(make_pair(path_node1_id, vnf_type));
 			counter++;
-			path_node1_id = path_node2_id;
-			path_node2_id = shareable_id[counter];
+			path_node1_id = shareable_id[counter];
 		}
 		else
 		{
-
-			// will store index of path, node id
-			for(int i=path_node1_id;i<path_node2_id; ++i)
-			{
-				most_loaded.push_back(make_pair(i, temp_nodes[path[i].first]));
-			}
-
-			sort(most_loaded.begin(), most_loaded.end(), most_loaded_criteria);
-
 			int is_deployed=0;
 			for(auto &node: most_loaded) 
 			{
 				if(is_available(node.second.available_resources, resources))
 				{
 					if(is_violating(local_nodes[node.second.id], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
+					{
+						cout<<"From 2\n\n";
 						return 0;
+					}
+					
 					float interference = interference_metric(local_nodes[node.second.id], request.NF[i]);
 					throughput_interference.push_back(interference);
 					current_delay += (1+interference)*delay_for_vnf_type(vnf_type)*1.0;  // 1+ to consider both vnf delay and interference delay
 					deployed_path.push_back(make_pair(node.first, vnf_type));
-					path_node1_id = node.first;
 					is_deployed = 1;
 					consume_resources(&node.second.available_resources, resources);
 					break;
@@ -396,8 +401,10 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 			}
 
 			if(is_deployed==0)
+			{
+				// cout<<"From 3\n\n";	
 				return 0; // this VNF cannot be deployed anywhere in the path
-
+			}
 			// deploy this vnf here
 			if(is_shareable(vnf_type))
 			{
@@ -405,7 +412,10 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 			}
 		}
 		if(current_delay>delay)
+		{
+			cout<<"From 4\n\n";
 			return 0;
+		}
     }
 
 	// check if the deployed path taken can satisfy the delay requirement
@@ -431,7 +441,11 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 	}
 
 	if(total_delay>delay)
+	{
+		cout<<"From 5\n\n";
+
 		return 0;
+	}
 
 	// request placed successfully here!
 	// update the local graph now

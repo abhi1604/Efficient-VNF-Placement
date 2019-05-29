@@ -139,7 +139,7 @@ struct path_info multi_stage(struct Request request, vector<vector<struct LinkIn
             if(j==0&&i!=0)
                 temp1.second = shareable_nodes[counter++].first;  // shareable vnf deployed here
             else if(j==0&&i==0)
-                temp1.second = -2;
+                temp1.second = -2;  // to indicate, src, dest
             else
                 temp1.second = -1;  // no shareable vnf deployed here
             complete_path.push_back(temp1);
@@ -150,7 +150,7 @@ struct path_info multi_stage(struct Request request, vector<vector<struct LinkIn
 
     pair<int, int> temp1;
     temp1.first = dest;
-    temp1.second = -2;
+    temp1.second = -2; // to indicate, src, dest
     complete_path.push_back(temp1);
 
     struct path_info selected_path_info;

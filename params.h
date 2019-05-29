@@ -123,7 +123,7 @@ struct Request
 	vector<int> nodes;    // nodes the VNFs are deployed on
 };
 
-
+// to set which VNFs are shareable
 bool is_shareable(int id)
 {
 	if(id==0||id==1)
