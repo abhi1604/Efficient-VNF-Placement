@@ -149,6 +149,12 @@ int typeofvnf(int type)
 		return MEM_TYPE;
 }
 
+struct end_result
+{
+	int is_satisfied;
+	float end_end_throughput;
+}
+
 float interference_metric(struct Node node, pair<int, struct Resources> NF)
 {
 	vector<pair<struct VNF, int>> existing_vnf = node.existing_vnf;

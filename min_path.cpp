@@ -53,7 +53,7 @@ float SPH(vector<struct Request> requests)  // SPH
 		// cout<<"--------------------------------------path size-------"<<selected_path_info.path.size()<<"----------------------"<<endl;
 		if(!selected_path_info.path_with_type.empty())
 		{
-			int temp_satisfied;
+			struct end_result temp_satisfied;
 			temp_satisfied = deployVNFSforSPH(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
 			if(temp_satisfied!=0)
 			{
