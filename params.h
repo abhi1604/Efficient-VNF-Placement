@@ -152,8 +152,8 @@ int typeofvnf(int type)
 struct end_result
 {
 	int is_satisfied;
-	float end_end_throughput;
-}
+	float throughput;
+};
 
 float interference_metric(struct Node node, pair<int, struct Resources> NF)
 {

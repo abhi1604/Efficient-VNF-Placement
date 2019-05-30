@@ -3,8 +3,11 @@
 #include <limits.h> 
 using namespace std;
 
-int deployVNFSforSPH(struct Request request, struct path_info selected_path_info, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, vector<int>> &vnfNodes, map<int, struct Request> &map_request)
+struct end_result deployVNFSforSPH(struct Request request, struct path_info selected_path_info, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, vector<int>> &vnfNodes, map<int, struct Request> &map_request)
 {
+	struct end_result results;
+	results.is_satisfied=0;
+
 	vector<pair<int, int>> path = selected_path_info.path_with_type;
 	int throughput = request.throughput;
 	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
@@ -31,7 +34,7 @@ int deployVNFSforSPH(struct Request request, struct path_info selected_path_info
 		{
 			if(is_violating(local_nodes[path[path_node1_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
 			{
-				return 0;
+				return results;
 			}
 			float interference = interference_metric(local_nodes[path[path_node1_id].first], request.NF[i]);
 			throughput_interference.push_back(interference);
@@ -54,7 +57,7 @@ int deployVNFSforSPH(struct Request request, struct path_info selected_path_info
 					float temp = interference_metric(local_nodes[node_id], request.NF[i]);
 					current_delay += temp*delay_for_vnf_type(vnf_type);
 					if(is_violating(local_nodes[node_id], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
-						return 0;
+						return results;
 					throughput_interference.push_back(temp);
 					deployed_path.push_back(j);
 					path_node1_id = j;
@@ -64,7 +67,7 @@ int deployVNFSforSPH(struct Request request, struct path_info selected_path_info
 				}
 			}
 			if(is_deployed==0) // this vnf cannot be deployed anywhere in the path
-				return 0;
+				return results;
 			// deploy this vnf here
 			if(is_shareable(vnf_type))
 			{
@@ -72,7 +75,7 @@ int deployVNFSforSPH(struct Request request, struct path_info selected_path_info
 			}
 		}
 		if(current_delay>delay)
-			return 0;
+			return results;
     }
 
 	// request placed successfully here!
@@ -138,11 +141,18 @@ int deployVNFSforSPH(struct Request request, struct path_info selected_path_info
 		map_request[request.request_id].nodes.push_back(path[node].first);
 		counter++;
 	}
-	return 1;
+
+	results.throughput = throughput*throughput_interference_till_now;
+	results.is_satisfied=1;
+
+	return results;
 }
 
-int deployVNFSwithInterference(struct Request request, struct path_info selected_path_info, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, vector<int>> &vnfNodes, map<int, struct Request> &map_request)
+struct end_result deployVNFSwithInterference(struct Request request, struct path_info selected_path_info, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, vector<int>> &vnfNodes, map<int, struct Request> &map_request)
 {
+	struct end_result results;
+	results.is_satisfied=0;
+
 	vector<pair<int, int>> path = selected_path_info.path_with_type;
 	int throughput = request.throughput;
 	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
@@ -171,7 +181,7 @@ int deployVNFSwithInterference(struct Request request, struct path_info selected
 			if(is_violating(local_nodes[path[path_node1_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
 			{
 				goto here;  // if the node hosting a shareable vnf is violating the SLA of past request, try other nodes
-				return 0;
+				return results;
 			}
 			float interference = interference_metric(local_nodes[path[path_node1_id].first], request.NF[i]);
 			throughput_interference.push_back(interference);
@@ -206,7 +216,7 @@ int deployVNFSwithInterference(struct Request request, struct path_info selected
 				}
 			}
 			if(minInterference==FLT_MAX) // cannot place this vnf anywhere in the path
-				return 0;
+				return results;
 
 			// deploy this vnf here
 			if(is_shareable(vnf_type))
@@ -217,7 +227,7 @@ int deployVNFSwithInterference(struct Request request, struct path_info selected
 			{
 				skipnode.push_back(minInterferenceNodeId);  // ignoring this node for the next iteration
 				goto here;
-				return 0;
+				return results;
 			}
 			path_node1_id = minInterferenceNodeId;
 			float interference = interference_metric(local_nodes[path[minInterferenceNodeId].first], request.NF[i]);
@@ -226,7 +236,7 @@ int deployVNFSwithInterference(struct Request request, struct path_info selected
 			deployed_path.push_back(minInterferenceNodeId);
 		}
 		if(current_delay>delay)
-			return 0;
+			return results;
     }
 
 	// request placed successfully here!
@@ -292,7 +302,10 @@ int deployVNFSwithInterference(struct Request request, struct path_info selected
 		map_request[request.request_id].nodes.push_back(path[node].first);
 		counter++;
 	}
-	return 1;
+
+	results.throughput = throughput*throughput_interference_till_now;
+	results.is_satisfied=1;
+	return results;
 }
 
 bool most_loaded_criteria(pair<int, struct Node> n1, pair<int, struct Node> n2)
@@ -304,8 +317,12 @@ bool most_loaded_criteria(pair<int, struct Node> n1, pair<int, struct Node> n2)
 	return(float(available_resources2*1.0/resources2) < float(available_resources1*1.0/resources1));
 }
 
-int deployVNFSforGUS(struct Request request, struct path_info selected_path_info, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, vector<int>> &vnfNodes, map<int, struct Request> &map_request)
+struct end_result deployVNFSforGUS(struct Request request, struct path_info selected_path_info, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, vector<int>> &vnfNodes, map<int, struct Request> &map_request)
 {
+
+	struct end_result results;
+	results.is_satisfied=0;
+
 	vector<pair<int, int>> path = selected_path_info.path_with_type;
 	int throughput = request.throughput;
 	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
@@ -367,7 +384,7 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 			if(is_violating(local_nodes[path[path_node1_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
 			{
 				cout<<"From 1\n\n";
-				return 0;
+				return results;
 			}
 			
 			float interference = interference_metric(local_nodes[path[path_node1_id].first], request.NF[i]);
@@ -387,7 +404,7 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 					if(is_violating(local_nodes[node.second.id], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
 					{
 						cout<<"From 2\n\n";
-						return 0;
+						return results;
 					}
 					
 					float interference = interference_metric(local_nodes[node.second.id], request.NF[i]);
@@ -403,7 +420,7 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 			if(is_deployed==0)
 			{
 				// cout<<"From 3\n\n";	
-				return 0; // this VNF cannot be deployed anywhere in the path
+				return results; // this VNF cannot be deployed anywhere in the path
 			}
 			// deploy this vnf here
 			if(is_shareable(vnf_type))
@@ -414,7 +431,7 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 		if(current_delay>delay)
 		{
 			cout<<"From 4\n\n";
-			return 0;
+			return results;
 		}
     }
 
@@ -444,7 +461,7 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 	{
 		cout<<"From 5\n\n";
 
-		return 0;
+		return results;
 	}
 
 	// request placed successfully here!
@@ -510,5 +527,8 @@ int deployVNFSforGUS(struct Request request, struct path_info selected_path_info
 		map_request[request.request_id].nodes.push_back(path[node.first].first);
 		counter++;
 	}
-	return 1;
+
+	results.is_satisfied=1;
+	results.throughput = throughput*throughput_interference_till_now;
+	return results;
 }

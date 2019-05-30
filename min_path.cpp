@@ -55,10 +55,10 @@ float SPH(vector<struct Request> requests)  // SPH
 		{
 			struct end_result temp_satisfied;
 			temp_satisfied = deployVNFSforSPH(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
-			if(temp_satisfied!=0)
+			if(temp_satisfied.is_satisfied!=0)
 			{
-				total_throughput += request.throughput;
-				satisfied+=temp_satisfied;
+				total_throughput += temp_satisfied.throughput;
+				satisfied++;
 			}
 		}
 	}
@@ -86,12 +86,12 @@ float algo(vector<struct Request> requests)
 		// cout<<"I am here!\n";
 		if(!selected_path_info.path_with_type.empty())
 		{
-			int temp_satisfied;
+			struct end_result temp_satisfied;
 			temp_satisfied = deployVNFSwithInterference(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
-			if(temp_satisfied!=0)
+			if(temp_satisfied.is_satisfied!=0)
 			{
-				total_throughput += request.throughput;
-				satisfied+=temp_satisfied;
+				total_throughput += temp_satisfied.throughput;
+				satisfied++;
 			}
 		}
 		// cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;
@@ -122,12 +122,12 @@ float GUS(vector<struct Request> requests)  // SPH
 		// cout<<"I am here!\n";
 		if(!selected_path_info.path_with_type.empty())
 		{
-			int temp_satisfied;
+			struct end_result temp_satisfied;
 			temp_satisfied = deployVNFSforGUS(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
-			if(temp_satisfied!=0)
+			if(temp_satisfied.is_satisfied!=0)
 			{
-				total_throughput += request.throughput;
-				satisfied+=temp_satisfied;
+				total_throughput += temp_satisfied.throughput;
+				satisfied++;
 			}
 		}
 	}
