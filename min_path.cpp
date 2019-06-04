@@ -70,40 +70,6 @@ float SPH(vector<struct Request> requests)  // SPH
 	return float(1.0*satisfied)/requests.size();
 }
 
-float algo(vector<struct Request> requests)
-{
-	vector<vector<struct LinkInfo>> local_graph(graph);
-	vector<struct Node> local_nodes(nodeInfo);
-	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
-	map<int, struct Request> map_request;
-
-	int total_throughput=0;
-	int satisfied = 0;
-	for(auto &request:requests)
-	{
-		map_request[request.request_id] = request;
-		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
-		// cout<<"I am here!\n";
-		if(!selected_path_info.path_with_type.empty())
-		{
-			struct end_result temp_satisfied;
-			temp_satisfied = deployVNFSwithInterference(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
-			if(temp_satisfied.is_satisfied!=0)
-			{
-				total_throughput += temp_satisfied.throughput;
-				satisfied++;
-			}
-		}
-		// cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;
-	}
-	cout<<"satisfied for algo "<<satisfied<<" "<<requests.size()<<"  "<<endl;
-	cout<<"Total throughput "<<total_throughput<<endl;
-	cout<<"Total VNFs placed with Algo is "<<VNFS_FOR_ALGO<<endl;
-	stats(local_nodes);
-	return float(1.0*satisfied)/requests.size();
-}
-
-
 float GUS(vector<struct Request> requests)  // SPH
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
@@ -139,8 +105,75 @@ float GUS(vector<struct Request> requests)  // SPH
 	return float(1.0*satisfied)/requests.size();
 }
 
+float AIA(vector<struct Request> requests)
+{
+	vector<vector<struct LinkInfo>> local_graph(graph);
+	vector<struct Node> local_nodes(nodeInfo);
+	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
+	map<int, struct Request> map_request;
+
+	int total_throughput=0;
+	int satisfied = 0;
+	for(auto &request:requests)
+	{
+		map_request[request.request_id] = request;
+		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		// cout<<"I am here!\n";
+		if(!selected_path_info.path_with_type.empty())
+		{
+			struct end_result temp_satisfied;
+			temp_satisfied = deployVNFSforAIA(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
+			if(temp_satisfied.is_satisfied!=0)
+			{
+				total_throughput += temp_satisfied.throughput;
+				satisfied++;
+			}
+		}
+		// cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;
+	}
+	cout<<"satisfied for AIA "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	cout<<"Total throughput "<<total_throughput<<endl;
+	cout<<"Total VNFs placed with AIA is "<<VNFS_FOR_AIA<<endl;
+	stats(local_nodes);
+	return float(1.0*satisfied)/requests.size();
+}
+
+float algo(vector<struct Request> requests)
+{
+	vector<vector<struct LinkInfo>> local_graph(graph);
+	vector<struct Node> local_nodes(nodeInfo);
+	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
+	map<int, struct Request> map_request;
+
+	int total_throughput=0;
+	int satisfied = 0;
+	for(auto &request:requests)
+	{
+		map_request[request.request_id] = request;
+		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		// cout<<"I am here!\n";
+		if(!selected_path_info.path_with_type.empty())
+		{
+			struct end_result temp_satisfied;
+			temp_satisfied = deployVNFSwithInterference(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
+			if(temp_satisfied.is_satisfied!=0)
+			{
+				total_throughput += temp_satisfied.throughput;
+				satisfied++;
+			}
+		}
+		// cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;
+	}
+	cout<<"satisfied for algo "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	cout<<"Total throughput "<<total_throughput<<endl;
+	cout<<"Total VNFs placed with Algo is "<<VNFS_FOR_ALGO<<endl;
+	stats(local_nodes);
+	return float(1.0*satisfied)/requests.size();
+}
+
 void serveRequests(vector<struct Request> requests)
 {
+	sort(requests.begin(), requests.end(), criteria);
  
 	// start the time here for SPH
 	auto start = high_resolution_clock::now(); 
@@ -153,28 +186,36 @@ void serveRequests(vector<struct Request> requests)
 	auto duration = duration_cast<milliseconds>(stop - start); 
 	cout<<"Time taken for SPH is "<<duration.count()<<" ms\n";
 
-	// start time for cutom algo
-	start = high_resolution_clock::now(); 
-	sort(requests.begin(), requests.end(), criteria);
-	//algo
-	float tat2 = algo(requests);
-	cout<<"TAT with algo is "<<tat2<<endl;
-
-	stop = high_resolution_clock::now(); 
-	duration = duration_cast<milliseconds>(stop - start); 
-	cout<<"Time taken for algo is "<<duration.count()<<" ms\n";
-
 
 	// start time for gus
 	start = high_resolution_clock::now(); 
-
 	// gus
-	float tat3 = GUS(requests);
-	cout<<"TAT with GUS is "<<tat3<<endl;
+	float tat2 = GUS(requests);
+	cout<<"TAT with GUS is "<<tat2<<endl;
 
 	stop = high_resolution_clock::now(); 
 	duration = duration_cast<milliseconds>(stop - start); 
 	cout<<"Time taken for GUS is "<<duration.count()<<" ms\n";
+
+	// start time for AIA
+	start = high_resolution_clock::now(); 
+	//AIA
+	float tat3 = AIA(requests);
+	cout<<"TAT with AIA is "<<tat3<<endl;
+
+	stop = high_resolution_clock::now(); 
+	duration = duration_cast<milliseconds>(stop - start); 
+	cout<<"Time taken for AIA is "<<duration.count()<<" ms\n";
+
+	// start time for cutom algo
+	start = high_resolution_clock::now(); 
+	//algo
+	float tat4 = algo(requests);
+	cout<<"TAT with algo is "<<tat4<<endl;
+
+	stop = high_resolution_clock::now(); 
+	duration = duration_cast<milliseconds>(stop - start); 
+	cout<<"Time taken for algo is "<<duration.count()<<" ms\n";
 }
 
 int MAX_REQUESTS_FROM_FILE;

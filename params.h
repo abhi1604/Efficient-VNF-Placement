@@ -76,6 +76,7 @@ float delay_for_vnf_type(int type)
 int VNFS_FOR_SPH=0;
 int VNFS_FOR_ALGO=0;
 int VNFS_FOR_GUS=0;
+int VNFS_FOR_AIA=0;
 
 struct Resources
 {
@@ -127,7 +128,7 @@ struct Request
 bool is_shareable(int id)
 {
 	if(id==0||id==1)
-		return true;
+		return false;
 	else
 		return false;
 }
@@ -205,6 +206,62 @@ float interference_metric(struct Node node, pair<int, struct Resources> NF)
 	else if(typeofvnf(type) == IO_TYPE)
 	{
 		interference = INTERFERENCE_IO_MEM*interference_with_mem_type + INTERFERENCE_IO_CPU*interference_with_cpu_type + INTERFERENCE_IO_IO*interference_with_IO_type;
+	}
+
+	interference = interference*1.0/node.resources.cpu;
+	return interference;
+}
+
+float interference_metric_AIA(struct Node node, pair<int, struct Resources> NF)
+{
+	vector<pair<struct VNF, int>> existing_vnf = node.existing_vnf;
+
+	float interference_with_IO_type = 0;
+	float interference_with_cpu_type = 0;
+	float interference_with_mem_type = 0;
+
+	int type = NF.first;
+	struct Resources resources = NF.second;
+
+	int total_required_cpu_resources = 0;
+	int with_mem = 0, with_cpu = 0, with_io = 0;
+	for(auto vnf: existing_vnf)
+	{
+		int vnf_resources = vnf.first.resources.cpu;
+		if(typeofvnf(vnf.first.type)==CPU_TYPE)
+			with_cpu += vnf_resources;
+		else if(typeofvnf(vnf.first.type)==MEM_TYPE)
+			with_mem += vnf_resources;
+		else if(typeofvnf(vnf.first.type)==IO_TYPE)
+			with_io += vnf_resources;
+
+		total_required_cpu_resources += vnf_resources;
+	}
+
+	total_required_cpu_resources += resources.cpu;
+	if(typeofvnf(type) == CPU_TYPE)
+		with_cpu += resources.cpu;
+	else if(typeofvnf(type)==MEM_TYPE)
+		with_mem += resources.cpu;
+	else if(typeofvnf(type)==IO_TYPE)
+		with_io += resources.cpu;
+
+	interference_with_mem_type = (1.0*with_mem);
+	interference_with_cpu_type = (1.0*with_cpu);
+	interference_with_IO_type = (1.0*with_io);
+
+	float interference;
+	if(typeofvnf(type) == CPU_TYPE)
+	{
+		interference = 1*interference_with_mem_type + 1*interference_with_cpu_type + 1*interference_with_IO_type;
+	}
+	else if(typeofvnf(type) == MEM_TYPE)
+	{
+		interference = 1*interference_with_mem_type + 1*interference_with_cpu_type + 1*interference_with_IO_type;
+	}
+	else if(typeofvnf(type) == IO_TYPE)
+	{
+		interference = 1*interference_with_mem_type + 1*interference_with_cpu_type + 1*interference_with_IO_type;
 	}
 
 	interference = interference*1.0/node.resources.cpu;

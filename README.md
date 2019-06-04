@@ -2,10 +2,10 @@
 Efficient VNF Placement
 
 
-To run the algorithm, follow the below steps:
+To run the simulation, follow the below steps:
 
-* g++ min_path.cpp -std=c++14
-* ./a.out NUM_REQUESTS
+* g++ min_path.cpp -std=c++14 -o simulation
+* ./simulation NUM_REQUESTS
 
 
 *NUM_REQUESTS is the number of requests that is given to the algorithm*
@@ -17,3 +17,5 @@ Run:
 * bash automation.sh | tee stats.logs
 * python3 log_processing.py
 
+
+The code is available at: https://github.com/abhi1604/Efficient-VNF-Placement
