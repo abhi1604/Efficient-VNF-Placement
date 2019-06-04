@@ -383,7 +383,6 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 		{
 			if(is_violating(local_nodes[path[path_node1_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
 			{
-				cout<<"From 1\n\n";
 				return results;
 			}
 			
@@ -403,7 +402,6 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 				{
 					if(is_violating(local_nodes[node.second.id], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
 					{
-						cout<<"From 2\n\n";
 						return results;
 					}
 					
@@ -419,7 +417,6 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 
 			if(is_deployed==0)
 			{
-				// cout<<"From 3\n\n";	
 				return results; // this VNF cannot be deployed anywhere in the path
 			}
 			// deploy this vnf here
@@ -431,7 +428,6 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 		}
 		if(current_delay>delay)
 		{
-			cout<<"From 4\n\n";
 			return results;
 		}
     }
@@ -460,7 +456,6 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 
 	if(total_delay>delay)
 	{
-		cout<<"From 5\n\n";
 
 		return results;
 	}
