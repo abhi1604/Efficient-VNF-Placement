@@ -157,3 +157,37 @@ for algo in sorted(time.keys()):
 	is_first=1
 
 f.close()
+
+
+import matplotlib.pyplot as plt
+
+def graphit(dict, name):
+
+
+	plt.clf()
+	x_axis = list(sorted(dict[list(dict.keys())[0]].keys()))
+
+
+	for algo in sorted(dict.keys()):
+		y_axis=[]
+		for request in x_axis:
+			y_axis += [dict[algo][request]]
+		plt.plot(x_axis, y_axis, label = str(algo))
+
+	# plt.gca().set_color_cycle(['green','blue', 'red', 'orange'])
+	plt.legend(loc = 'best')
+	plt.title("Average " + str(name) + " vs. Number of Requests")
+	plt.ylabel(str(name))
+	plt.xlabel('Number of Requests')
+	plt.savefig("/home/abhi/Desktop/Sem8/TWiN/Project/Efficient-VNF-Placement/" + str(name) +"vsNumber_of_Requests.png")
+	# plt.show()
+
+
+graphit(nodes, "Nodes running")
+
+
+graphit(time, "Time(in ms)")
+graphit(tat, "Total Accepted Throughput")
+graphit(vnfs, "vnfs deployed")
+graphit(throughput, "Throughput(in Mbps)")
+graphit(satisfied, "satisfied")

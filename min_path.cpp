@@ -312,8 +312,8 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					temp.bandwidth = 1000;
-					temp.available_bandwidth =1000;
+					temp.bandwidth = INT_MAX;
+					temp.available_bandwidth =INT_MAX;
 				}
 				int e1=0, e2=0; // initally mark both node1, node2 as non edge
 				// make more delay between edge and core
