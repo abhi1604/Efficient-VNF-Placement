@@ -24,22 +24,22 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 			shareable_id.push_back(i);
 	}
 
-	int path_node1_id = shareable_id[1], path_node2_id = shareable_id[1];  // because 0 is the source and the shareable types start from 1, if  present
+	int path_node1_id = shareable_id[0], path_node2_id = shareable_id[1];  // because 0 is the source and the shareable types start from 1, if  present
 	int counter = 1; // not 0, because it is the source
     for(int i=0; i<request.NF.size(); ++i)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
     	struct Resources resources = request.NF[i].second;
-		if(is_shareable(vnf_type) && path[path_node1_id].second==vnf_type)
+		if(is_shareable(vnf_type) && path[path_node2_id].second==vnf_type)
 		{
-			if(is_violating(local_nodes[path[path_node1_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
+			if(is_violating(local_nodes[path[path_node2_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
 			{
 				return results;
 			}
-			float interference = interference_metric(local_nodes[path[path_node1_id].first], request.NF[i]);
+			float interference = interference_metric(local_nodes[path[path_node2_id].first], request.NF[i]);
 			throughput_interference.push_back(interference);
 			current_delay += interference*delay_for_vnf_type(vnf_type);
-			deployed_path.push_back(path_node1_id);
+			deployed_path.push_back(path_node2_id);
 			counter++;
 			path_node1_id = path_node2_id;
 			path_node2_id = shareable_id[counter];
@@ -142,7 +142,7 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 		counter++;
 	}
 
-	results.throughput = throughput*(1-throughput_interference_till_now);
+	results.throughput = 1.0*throughput*(1-throughput_interference_till_now);
 	results.is_satisfied=1;
 
 	return results;
@@ -364,7 +364,7 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 	}
 
 	results.is_satisfied=1;
-	results.throughput = throughput*(1-throughput_interference_till_now);
+	results.throughput = 1.0*throughput*(1-throughput_interference_till_now);
 	return results;
 }
 
@@ -522,7 +522,7 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 		counter++;
 	}
 
-	results.throughput = throughput*(1-throughput_interference_till_now);
+	results.throughput = 1.0*throughput*(1-throughput_interference_till_now);
 	results.is_satisfied=1;
 	return results;
 }
@@ -681,7 +681,7 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 		counter++;
 	}
 
-	results.throughput = throughput*(1-throughput_interference_till_now);
+	results.throughput = 1.0*throughput*(1-throughput_interference_till_now);
 	results.is_satisfied=1;
 	return results;
 }
