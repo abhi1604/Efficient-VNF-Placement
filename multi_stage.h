@@ -13,7 +13,7 @@ struct path_info multi_stage(struct Request request, vector<vector<struct LinkIn
     int throughput = request.throughput;
     float delay = request.delay;
 
-    // create a shareable nodes vector to know if that node is already deployed in the graph
+    // create a shareable nodes vector to know if that vnf is already deployed in the graph
     vector<pair<int, struct Resources>> shareable_nodes;
     for(int i=0; i<request.NF.size(); ++i)
     {
@@ -22,11 +22,11 @@ struct path_info multi_stage(struct Request request, vector<vector<struct LinkIn
 		int yes=0;
         if(is_shareable(vnf_type))
 		{
-            for(auto node: vnfNodes[vnf_type])
+            for(auto node: vnfNodes[vnf_type])               // the nodes which run the above said VNF
             {
-                for(auto vnf: local_nodes[node].existing_vnf)
+                for(auto vnf: local_nodes[node].existing_vnf) // search for the required VNF in the node
                 {
-                    if(vnf.first.type==vnf_type && is_available(vnf.first.available_resources, vnf_resources))  // check if the existinf vnf has enough resources to be shared
+                    if(vnf.first.type==vnf_type && is_available(vnf.first.available_resources, vnf_resources))  // check if the existing vnf has enough resources to be shared
                     {
                         yes=1;
                         break;
@@ -37,7 +37,7 @@ struct path_info multi_stage(struct Request request, vector<vector<struct LinkIn
             }
 			if(yes==1)
 			{
-				shareable_nodes.push_back(make_pair(vnf_type, vnf_resources));
+				shareable_nodes.push_back(make_pair(vnf_type, vnf_resources));  // in the request, this vnf is shreable and can be shared with a vnf already deployed in the graph
 			}
 		}
     }
@@ -69,7 +69,7 @@ struct path_info multi_stage(struct Request request, vector<vector<struct LinkIn
 
     for(int i=0; i<graph.size(); ++i)
         d[i][0] = 0.0;
-    
+
     for(int i=1; i<matrix.size(); ++i)
     {
         for (auto m:matrix[i])
@@ -96,9 +96,8 @@ struct path_info multi_stage(struct Request request, vector<vector<struct LinkIn
 
     float lat_curr = d[dest][matrix.size()-1];
 
-    float vnf_delay_here = compute_vnf_delay(request); 
     // cannot provision this request if delay is more than requirement
-    if(lat_curr +  vnf_delay_here > request.delay)
+    if(lat_curr > request.delay)
     {
         struct path_info selected_path_info;
         vector<pair<int, int>> temp;
@@ -145,9 +144,10 @@ struct path_info multi_stage(struct Request request, vector<vector<struct LinkIn
             complete_path.push_back(temp1);
         }
     }
-    float total_delay = lat_curr+vnf_delay_here;
 
+    float total_delay = lat_curr;
 
+    // finally pushing the destination
     pair<int, int> temp1;
     temp1.first = dest;
     temp1.second = -2; // to indicate, src, dest

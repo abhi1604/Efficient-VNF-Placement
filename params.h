@@ -119,7 +119,7 @@ struct Request
 	int destination;
 	vector<pair<int, struct Resources>> NF;  // the type of VNF required and how many resources it should have
 	int throughput;   // end-end
-	float delay;     // end-end
+	float delay;     // end-end (required)
 	float current_delay;  // actual delay with which the request is served
 	vector<int> nodes;    // nodes the VNFs are deployed on
 };

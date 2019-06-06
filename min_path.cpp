@@ -44,13 +44,12 @@ float SPH(vector<struct Request> requests)  // SPH
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 	map<int, struct Request> map_request;
 
-	int total_throughput=0;
+	float total_throughput=0;
 	int satisfied = 0;
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
 		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
-		// cout<<"--------------------------------------path size-------"<<selected_path_info.path.size()<<"----------------------"<<endl;
 		if(!selected_path_info.path_with_type.empty())
 		{
 			struct end_result temp_satisfied;
@@ -77,7 +76,7 @@ float GUS(vector<struct Request> requests)  // SPH
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 	map<int, struct Request> map_request;
 
-	int total_throughput=0;
+	float total_throughput=0;
 	int satisfied = 0;
 
 	for(auto &request:requests)
@@ -85,7 +84,6 @@ float GUS(vector<struct Request> requests)  // SPH
 		map_request[request.request_id] = request;
 		
 		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
-		// cout<<"I am here!\n";
 		if(!selected_path_info.path_with_type.empty())
 		{
 			struct end_result temp_satisfied;
@@ -112,13 +110,12 @@ float AIA(vector<struct Request> requests)
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 	map<int, struct Request> map_request;
 
-	int total_throughput=0;
+	float total_throughput=0;
 	int satisfied = 0;
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
 		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
-		// cout<<"I am here!\n";
 		if(!selected_path_info.path_with_type.empty())
 		{
 			struct end_result temp_satisfied;
@@ -129,7 +126,6 @@ float AIA(vector<struct Request> requests)
 				satisfied++;
 			}
 		}
-		// cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;
 	}
 	cout<<"satisfied for AIA "<<satisfied<<" "<<requests.size()<<"  "<<endl;
 	cout<<"Total throughput "<<total_throughput<<endl;
@@ -145,24 +141,22 @@ float algo(vector<struct Request> requests)
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 	map<int, struct Request> map_request;
 
-	int total_throughput=0;
+	float total_throughput=0;
 	int satisfied = 0;
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
 		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
-		// cout<<"I am here!\n";
 		if(!selected_path_info.path_with_type.empty())
 		{
 			struct end_result temp_satisfied;
-			temp_satisfied = deployVNFSwithInterference(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
+			temp_satisfied = deployVNFSforAlgo(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
 			if(temp_satisfied.is_satisfied!=0)
 			{
 				total_throughput += temp_satisfied.throughput;
 				satisfied++;
 			}
 		}
-		// cout<<"--------------------------------------path size-------"<<selected_path.size()<<"----------------------"<<endl;
 	}
 	cout<<"satisfied for algo "<<satisfied<<" "<<requests.size()<<"  "<<endl;
 	cout<<"Total throughput "<<total_throughput<<endl;
@@ -239,6 +233,7 @@ void processRequests()
 			{
 				temp.source = edge_nodes[rand()%edge_nodes.size()];
 			} while(temp.source==temp.destination);
+
 			float delay = ((REQUEST_MAX_DELAY - REQUEST_MIN_DELAY) * ((float)rand() / RAND_MAX)) + REQUEST_MIN_DELAY;
 			temp.delay = delay;
 			// temp.throughput = REQUEST_THROUGHPUT[rand()%REQUEST_THROUGHPUT.size()];
@@ -281,7 +276,6 @@ int main(int argc, char *argv[])
 				temp.resources.cpu = EDGE_MIN_RESOURCES + rand() % (( EDGE_MAX_RESOURCES + 1 ) - EDGE_MIN_RESOURCES);
 				temp.available_resources.cpu = temp.resources.cpu;
 			}
-				// temp.resources.cpu = rand()%(EDGE_RESOURCES/2) + ((EDGE_RESOURCES)/2) + 1;
 			else
 			{
 				temp.resources.cpu = CORE_MIN_RESOURCES + rand() % (( CORE_MAX_RESOURCES + 1 ) - CORE_MIN_RESOURCES);
@@ -315,8 +309,8 @@ int main(int argc, char *argv[])
 					temp.bandwidth = INT_MAX;
 					temp.available_bandwidth =INT_MAX;
 				}
+
 				int e1=0, e2=0; // initally mark both node1, node2 as non edge
-				// make more delay between edge and core
 				if (find(edge_nodes.begin(), edge_nodes.end(), node1)!=edge_nodes.end())
 				{
 					e1=1;
@@ -325,6 +319,8 @@ int main(int argc, char *argv[])
 				{
 					e2=1;
 				}
+
+				// make more delay between edge and core
 				float delay;
 				if(e1==1&&e2==1) // both are edge nodes
 				{
