@@ -37,14 +37,13 @@ bool criteria(struct Request request1, struct Request request2)
 	return (float(request2.throughput*1.0/resource2.cpu) > float(request1.throughput*1.0/resource1.cpu));
 }
 
-float SPH(vector<struct Request> requests)  // SPH
+void SPH(vector<struct Request> requests)  // SPH
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 	map<int, struct Request> map_request;
 
-	float total_throughput=0;
 	int satisfied = 0;
 	for(auto &request:requests)
 	{
@@ -54,22 +53,21 @@ float SPH(vector<struct Request> requests)  // SPH
 		{
 			struct end_result temp_satisfied;
 			temp_satisfied = deployVNFSforSPH(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
-			if(temp_satisfied.is_satisfied!=0)
-			{
-				total_throughput += temp_satisfied.throughput;
-				satisfied++;
-			}
+			// if(temp_satisfied.is_satisfied!=0)
+			// {
+			// 	// total_throughput += temp_satisfied.throughput;
+			// 	satisfied++;
+			// }
 		}
 	}
 
-	cout<<"satisfied for SPH "<<satisfied<<" "<<requests.size()<<"  "<<endl;
-	cout<<"Total throughput "<<total_throughput<<endl;
-	cout<<"Total VNFs placed with SPH is "<<VNFS_FOR_SPH<<endl;
-	stats(local_nodes);
-	return float(1.0*satisfied)/requests.size();
+	// cout<<"satisfied for SPH "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	// cout<<"Total throughput "<<total_throughput<<endl;
+	// cout<<"Total VNFs placed with SPH is "<<VNFS_FOR_SPH<<endl;
+	stats(local_nodes, map_request, requests, string("SPH"));
 }
 
-float GUS(vector<struct Request> requests)  // SPH
+void GUS(vector<struct Request> requests)  // SPH
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
@@ -96,14 +94,14 @@ float GUS(vector<struct Request> requests)  // SPH
 		}
 	}
 
-	cout<<"satisfied for GUS "<<satisfied<<" "<<requests.size()<<"  "<<endl;
-	cout<<"Total throughput "<<total_throughput<<endl;
-	cout<<"Total VNFs placed with GUS is "<<VNFS_FOR_GUS<<endl;
-	stats(local_nodes);
-	return float(1.0*satisfied)/requests.size();
+	// cout<<"satisfied for GUS "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	// cout<<"Total throughput "<<total_throughput<<endl;
+	// cout<<"Total VNFs placed with GUS is "<<VNFS_FOR_GUS<<endl;
+
+	stats(local_nodes, map_request, requests, string("GUS"));
 }
 
-float AIA(vector<struct Request> requests)
+void AIA(vector<struct Request> requests)
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
@@ -127,14 +125,13 @@ float AIA(vector<struct Request> requests)
 			}
 		}
 	}
-	cout<<"satisfied for AIA "<<satisfied<<" "<<requests.size()<<"  "<<endl;
-	cout<<"Total throughput "<<total_throughput<<endl;
-	cout<<"Total VNFs placed with AIA is "<<VNFS_FOR_AIA<<endl;
-	stats(local_nodes);
-	return float(1.0*satisfied)/requests.size();
+	// cout<<"satisfied for AIA "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	// cout<<"Total throughput "<<total_throughput<<endl;
+	// cout<<"Total VNFs placed with AIA is "<<VNFS_FOR_AIA<<endl;
+	stats(local_nodes, map_request, requests, string("AIA"));
 }
 
-float algo(vector<struct Request> requests)
+void algo(vector<struct Request> requests)
 {
 	vector<vector<struct LinkInfo>> local_graph(graph);
 	vector<struct Node> local_nodes(nodeInfo);
@@ -158,11 +155,10 @@ float algo(vector<struct Request> requests)
 			}
 		}
 	}
-	cout<<"satisfied for algo "<<satisfied<<" "<<requests.size()<<"  "<<endl;
-	cout<<"Total throughput "<<total_throughput<<endl;
-	cout<<"Total VNFs placed with Algo is "<<VNFS_FOR_ALGO<<endl;
-	stats(local_nodes);
-	return float(1.0*satisfied)/requests.size();
+	// cout<<"satisfied for algo "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	// cout<<"Total throughput "<<total_throughput<<endl;
+	// cout<<"Total VNFs placed with Algo is "<<VNFS_FOR_ALGO<<endl;
+	stats(local_nodes, map_request, requests, string("algo"));
 }
 
 void serveRequests(vector<struct Request> requests)
@@ -173,8 +169,7 @@ void serveRequests(vector<struct Request> requests)
 	auto start = high_resolution_clock::now(); 
 	
 	//SPH
-	float tat1 = SPH(requests);
-	cout<<"TAT with SPH is "<<tat1<<endl;
+ 	SPH(requests);
 
 	auto stop = high_resolution_clock::now(); 
 	auto duration = duration_cast<milliseconds>(stop - start); 
@@ -184,9 +179,8 @@ void serveRequests(vector<struct Request> requests)
 	// start time for gus
 	start = high_resolution_clock::now(); 
 	// gus
-	float tat2 = GUS(requests);
-	cout<<"TAT with GUS is "<<tat2<<endl;
-
+	GUS(requests);
+	
 	stop = high_resolution_clock::now(); 
 	duration = duration_cast<milliseconds>(stop - start); 
 	cout<<"Time taken for GUS is "<<duration.count()<<" ms\n";
@@ -194,9 +188,8 @@ void serveRequests(vector<struct Request> requests)
 	// start time for AIA
 	start = high_resolution_clock::now(); 
 	//AIA
-	float tat3 = AIA(requests);
-	cout<<"TAT with AIA is "<<tat3<<endl;
-
+	AIA(requests);
+	
 	stop = high_resolution_clock::now(); 
 	duration = duration_cast<milliseconds>(stop - start); 
 	cout<<"Time taken for AIA is "<<duration.count()<<" ms\n";
@@ -204,9 +197,8 @@ void serveRequests(vector<struct Request> requests)
 	// start time for cutom algo
 	start = high_resolution_clock::now(); 
 	//algo
-	float tat4 = algo(requests);
-	cout<<"TAT with algo is "<<tat4<<endl;
-
+	algo(requests);
+	
 	stop = high_resolution_clock::now(); 
 	duration = duration_cast<milliseconds>(stop - start); 
 	cout<<"Time taken for algo is "<<duration.count()<<" ms\n";

@@ -101,6 +101,7 @@ struct path_info multi_stage(struct Request request, vector<vector<struct LinkIn
     {
         struct path_info selected_path_info;
         vector<pair<int, int>> temp;
+        temp.clear();
         selected_path_info.path_with_type = temp;
         return selected_path_info;
     }
