@@ -151,7 +151,7 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 
 	// results.throughput = 1.0*throughput*(1-throughput_interference_till_now);
 	results.is_satisfied=1;
-
+	map_request[request.request_id].satisfied=1;
 	return results;
 }
 
@@ -380,6 +380,7 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 
 	results.is_satisfied=1;
 	// results.throughput = 1.0*throughput*(1-throughput_interference_till_now);
+	map_request[request.request_id].satisfied=1;
 	return results;
 }
 
@@ -547,6 +548,8 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 
 	// results.throughput = 1.0*throughput*(1-throughput_interference_till_now);
 	results.is_satisfied=1;
+	map_request[request.request_id].satisfied=1;
+
 	return results;
 }
 
@@ -714,5 +717,7 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 
 	// results.throughput = 1.0*throughput*(1-throughput_interference_till_now);
 	results.is_satisfied=1;
+	map_request[request.request_id].satisfied=1;
+
 	return results;
 }

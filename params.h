@@ -118,6 +118,7 @@ struct Request
 	float delay;     // end-end (required)
 	float current_delay;  // actual delay with which the request is served
 	vector<int> nodes;    // nodes the VNFs are deployed on
+	bool satisfied;
 };
 
 // to set which VNFs are shareable
@@ -306,41 +307,46 @@ void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_reques
 			total_vnfs += node.existing_vnf.size();
 		}
 	}
-
+	// cout<<"\n--------------------------------------------------\n";
 	for(auto id_request:map_request)
 	{
 		struct Request request = id_request.second;
-		int throughput = request.throughput;
-		float delay = request.delay;
-		float current_delay = request.current_delay;
-		vector<int> nodes = request.nodes;
-		vector<pair<int, struct Resources>> NF = request.NF;
-		
-		float total_interference=1;
-		float total_delay=current_delay;
-
-		int counter=0;
-		for(auto node:nodes)
+		if(request.satisfied==1)
 		{
-			pair<int, struct Resources> dummy_nf;
-			dummy_nf.second.cpu=0;
-			dummy_nf.first=request.NF[counter].first;
-			float interference = interference_metric(local_nodes[node], dummy_nf);
-			// if(interference>1)
-			// 	cout<<interference<<endl;
-			float interference_delay = interference*delay_for_vnf_type(request.NF[counter].first);
+			int throughput = request.throughput;
+			float delay = request.delay;
+			float current_delay = request.current_delay;
 
-			total_delay += interference_delay;
+			// cout<<current_delay<<endl;
+			vector<int> nodes = request.nodes;
+			vector<pair<int, struct Resources>> NF = request.NF;
+			
+			float total_interference=1;
+			float total_delay=current_delay;
 
-			total_interference*=interference;
-			counter++;
-		}
+			int counter=0;
+			for(auto node:nodes)
+			{
+				pair<int, struct Resources> dummy_nf;
+				dummy_nf.second.cpu=0;
+				dummy_nf.first=request.NF[counter].first;
+				float interference = interference_metric(local_nodes[node], dummy_nf);
+				// if(interference>1)
+				// 	cout<<interference<<endl;
+				float interference_delay = interference*delay_for_vnf_type(request.NF[counter].first);
 
-		if(total_delay<=delay)
-		{
-			satisfied++;
-			// cout<<total_interference<<endl;
-			total_throughput += throughput*(1-total_interference);
+				total_delay += interference_delay;
+
+				total_interference*=interference;
+				counter++;
+			}
+
+			if(total_delay<=delay)
+			{
+				satisfied++;
+				// cout<<total_interference<<endl;
+				total_throughput += throughput*total_interference;
+			}
 		}
 	}
 

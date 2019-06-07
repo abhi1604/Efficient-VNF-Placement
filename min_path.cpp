@@ -48,6 +48,8 @@ void SPH(vector<struct Request> requests)  // SPH
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
+		map_request[request.request_id].satisfied=0;
+
 		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		if(!selected_path_info.path_with_type.empty())
 		{
@@ -80,6 +82,7 @@ void GUS(vector<struct Request> requests)  // SPH
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
+		map_request[request.request_id].satisfied=0;
 		
 		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		if(!selected_path_info.path_with_type.empty())
@@ -113,6 +116,8 @@ void AIA(vector<struct Request> requests)
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
+		map_request[request.request_id].satisfied=0;
+
 		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		if(!selected_path_info.path_with_type.empty())
 		{
@@ -143,6 +148,8 @@ void algo(vector<struct Request> requests)
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
+		map_request[request.request_id].satisfied=0;
+
 		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		if(!selected_path_info.path_with_type.empty())
 		{
@@ -299,7 +306,7 @@ int main(int argc, char *argv[])
 				else
 				{
 					temp.bandwidth = INT_MAX;
-					temp.available_bandwidth =INT_MAX;
+					temp.available_bandwidth = INT_MAX;
 				}
 
 				int e1=0, e2=0; // initally mark both node1, node2 as non edge
