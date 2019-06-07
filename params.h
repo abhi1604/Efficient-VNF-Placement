@@ -213,55 +213,18 @@ float interference_metric_AIA(struct Node node, pair<int, struct Resources> NF)
 {
 	vector<pair<struct VNF, int>> existing_vnf = node.existing_vnf;
 
-	float interference_with_IO_type = 0;
-	float interference_with_cpu_type = 0;
-	float interference_with_mem_type = 0;
-
 	int type = NF.first;
 	struct Resources resources = NF.second;
 
-	int total_required_cpu_resources = 0;
-	int with_mem = 0, with_cpu = 0, with_io = 0;
-	for(auto vnf: existing_vnf)
-	{
-		int vnf_resources = vnf.first.resources.cpu;
-		if(typeofvnf(vnf.first.type)==CPU_TYPE)
-			with_cpu += vnf_resources;
-		else if(typeofvnf(vnf.first.type)==MEM_TYPE)
-			with_mem += vnf_resources;
-		else if(typeofvnf(vnf.first.type)==IO_TYPE)
-			with_io += vnf_resources;
+	float total_required_cpu_resources = 0;
 
-		total_required_cpu_resources += vnf_resources;
-	}
+	for(auto vnf: existing_vnf)
+		total_required_cpu_resources += vnf.first.resources.cpu;
 
 	total_required_cpu_resources += resources.cpu;
-	if(typeofvnf(type) == CPU_TYPE)
-		with_cpu += resources.cpu;
-	else if(typeofvnf(type)==MEM_TYPE)
-		with_mem += resources.cpu;
-	else if(typeofvnf(type)==IO_TYPE)
-		with_io += resources.cpu;
 
-	interference_with_mem_type = (1.0*with_mem);
-	interference_with_cpu_type = (1.0*with_cpu);
-	interference_with_IO_type = (1.0*with_io);
 
-	float interference;
-	if(typeofvnf(type) == CPU_TYPE)
-	{
-		interference = 1*interference_with_mem_type + 1*interference_with_cpu_type + 1*interference_with_IO_type;
-	}
-	else if(typeofvnf(type) == MEM_TYPE)
-	{
-		interference = 1*interference_with_mem_type + 1*interference_with_cpu_type + 1*interference_with_IO_type;
-	}
-	else if(typeofvnf(type) == IO_TYPE)
-	{
-		interference = 1*interference_with_mem_type + 1*interference_with_cpu_type + 1*interference_with_IO_type;
-	}
-
-	interference = interference*1.0/node.resources.cpu;
+	float interference = float(total_required_cpu_resources*1.0)/node.resources.cpu;
 	return interference;
 }
 
@@ -330,7 +293,17 @@ void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_reques
 				pair<int, struct Resources> dummy_nf;
 				dummy_nf.second.cpu=0;
 				dummy_nf.first=request.NF[counter].first;
-				float interference = interference_metric(local_nodes[node], dummy_nf);
+				float interference;
+				if(algo_name==string("algo"))
+				{
+					interference = interference_metric(local_nodes[node], dummy_nf);
+				}				
+				else
+				{
+					interference = interference_metric_AIA(local_nodes[node], dummy_nf);
+				if(interference>1)
+					cout<<interference<<endl;
+				}
 				// if(interference>1)
 				// 	cout<<interference<<endl;
 				float interference_delay = interference*delay_for_vnf_type(request.NF[counter].first);
@@ -345,7 +318,7 @@ void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_reques
 			{
 				satisfied++;
 				// cout<<total_interference<<endl;
-				total_throughput += throughput*total_interference;
+				total_throughput += throughput*(1-total_interference);
 			}
 		}
 	}
