@@ -127,7 +127,7 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 			if(is_shareable(type))  
 				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			struct Resources new_vnf_resources;
-			if(is_available(local_nodes[path[node].first].resources, new_vnf_resources))
+			if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
 			{
 				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
 			}
@@ -356,7 +356,7 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			struct Resources new_vnf_resources;
 
-			if(is_available(local_nodes[path[node.first].first].resources, new_vnf_resources))
+			if(is_available(local_nodes[path[node.first].first].available_resources, new_vnf_resources))
 			{
 				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
 			}
@@ -524,7 +524,7 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			
 			struct Resources new_vnf_resources;
-			if(is_available(local_nodes[path[node].first].resources, new_vnf_resources))
+			if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
 			{
 				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
 			}
@@ -693,7 +693,7 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			
 			struct Resources new_vnf_resources;
-			if(is_available(local_nodes[path[node].first].resources, new_vnf_resources))
+			if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
 			{
 				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
 			}
