@@ -1,4 +1,5 @@
 #include<vector>
+#include<string>
 using namespace std;
 
 int MAX_REQUESTS = 50;
@@ -72,10 +73,6 @@ float delay_for_vnf_type(int type)
 	else if(type==3)  // type 4
 		return 3.5;   // 3.5ms
 }
-// temp for stats purpose
-int VNFS_FOR_SPH=0;
-int VNFS_FOR_ALGO=0;
-int VNFS_FOR_GUS=0;
 
 struct Resources
 {
@@ -118,16 +115,17 @@ struct Request
 	int destination;
 	vector<pair<int, struct Resources>> NF;  // the type of VNF required and how many resources it should have
 	int throughput;   // end-end
-	float delay;     // end-end
+	float delay;     // end-end (required)
 	float current_delay;  // actual delay with which the request is served
 	vector<int> nodes;    // nodes the VNFs are deployed on
+	bool satisfied;
 };
 
-
+// to set which VNFs are shareable
 bool is_shareable(int id)
 {
 	if(id==0||id==1)
-		return true;
+		return false;
 	else
 		return false;
 }
@@ -149,7 +147,69 @@ int typeofvnf(int type)
 		return MEM_TYPE;
 }
 
+struct end_result
+{
+	int is_satisfied;
+	float throughput;
+};
+
 float interference_metric(struct Node node, pair<int, struct Resources> NF)
+{
+	vector<pair<struct VNF, int>> existing_vnf = node.existing_vnf;
+
+	float interference_with_IO_type = 0;
+	float interference_with_cpu_type = 0;
+	float interference_with_mem_type = 0;
+
+	int type = NF.first;
+	struct Resources resources = NF.second;
+
+	// int total_required_cpu_resources = 0;
+	int with_mem = 0, with_cpu = 0, with_io = 0;
+	for(auto vnf: existing_vnf)
+	{
+		int vnf_resources = vnf.first.resources.cpu;
+		if(typeofvnf(vnf.first.type)==CPU_TYPE)
+			with_cpu += vnf_resources;
+		else if(typeofvnf(vnf.first.type)==MEM_TYPE)
+			with_mem += vnf_resources;
+		else if(typeofvnf(vnf.first.type)==IO_TYPE)
+			with_io += vnf_resources;
+
+		// total_required_cpu_resources += vnf_resources;
+	}
+
+	// total_required_cpu_resources += resources.cpu;
+	if(typeofvnf(type) == CPU_TYPE)
+		with_cpu += resources.cpu;
+	else if(typeofvnf(type)==MEM_TYPE)
+		with_mem += resources.cpu;
+	else if(typeofvnf(type)==IO_TYPE)
+		with_io += resources.cpu;
+
+	interference_with_mem_type = (1.0*with_mem);
+	interference_with_cpu_type = (1.0*with_cpu);
+	interference_with_IO_type = (1.0*with_io);
+
+	float interference;
+	if(typeofvnf(type) == CPU_TYPE)
+	{
+		interference = INTERFERENCE_CPU_MEM*interference_with_mem_type + INTERFERENCE_CPU_CPU*interference_with_cpu_type + INTERFERENCE_CPU_IO*interference_with_IO_type;
+	}
+	else if(typeofvnf(type) == MEM_TYPE)
+	{
+		interference = INTERFERENCE_MEM_MEM*interference_with_mem_type + INTERFERENCE_MEM_CPU*interference_with_cpu_type + INTERFERENCE_MEM_IO*interference_with_IO_type;
+	}
+	else if(typeofvnf(type) == IO_TYPE)
+	{
+		interference = INTERFERENCE_IO_MEM*interference_with_mem_type + INTERFERENCE_IO_CPU*interference_with_cpu_type + INTERFERENCE_IO_IO*interference_with_IO_type;
+	}
+
+	interference = interference*1.0/node.resources.cpu;
+	return interference;
+}
+
+float interference_metric_AIA(struct Node node, pair<int, struct Resources> NF)
 {
 	vector<pair<struct VNF, int>> existing_vnf = node.existing_vnf;
 
@@ -190,15 +250,15 @@ float interference_metric(struct Node node, pair<int, struct Resources> NF)
 	float interference;
 	if(typeofvnf(type) == CPU_TYPE)
 	{
-		interference = INTERFERENCE_CPU_MEM*interference_with_mem_type + INTERFERENCE_CPU_CPU*interference_with_cpu_type + INTERFERENCE_CPU_IO*interference_with_IO_type;
+		interference = 1*interference_with_mem_type + 1*interference_with_cpu_type + 1*interference_with_IO_type;
 	}
 	else if(typeofvnf(type) == MEM_TYPE)
 	{
-		interference = INTERFERENCE_MEM_MEM*interference_with_mem_type + INTERFERENCE_MEM_CPU*interference_with_cpu_type + INTERFERENCE_MEM_IO*interference_with_IO_type;
+		interference = 1*interference_with_mem_type + 1*interference_with_cpu_type + 1*interference_with_IO_type;
 	}
 	else if(typeofvnf(type) == IO_TYPE)
 	{
-		interference = INTERFERENCE_IO_MEM*interference_with_mem_type + INTERFERENCE_IO_CPU*interference_with_cpu_type + INTERFERENCE_IO_IO*interference_with_IO_type;
+		interference = 1*interference_with_mem_type + 1*interference_with_cpu_type + 1*interference_with_IO_type;
 	}
 
 	interference = interference*1.0/node.resources.cpu;
@@ -232,15 +292,69 @@ void consume_resources(struct Resources *r1, struct Resources r2)
 	// r1->IO-=r2.IO;
 }
 
-void stats(vector<struct Node> nodes)
+void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_request, vector<struct Request> requests, string algo_name)
 {
-	int total=0;
+	int total_nodes=0;
+	int total_vnfs=0;
+	int satisfied=0;
+	float total_throughput=0;
 
-	for(auto node:nodes)
+	for(auto node:local_nodes)
+	{
 		if(node.existing_vnf.size()>0)
-			total++;
+		{
+			total_nodes++;
+			total_vnfs += node.existing_vnf.size();
+		}
+	}
+	// cout<<"\n--------------------------------------------------\n";
+	for(auto id_request:map_request)
+	{
+		struct Request request = id_request.second;
+		if(request.satisfied==1)
+		{
+			int throughput = request.throughput;
+			float delay = request.delay;
+			float current_delay = request.current_delay;
 
-	cout<<"Total nodes activated is "<<total<<endl;
+			// cout<<current_delay<<endl;
+			vector<int> nodes = request.nodes;
+			vector<pair<int, struct Resources>> NF = request.NF;
+			
+			float total_interference=1;
+			float total_delay=current_delay;
+
+			int counter=0;
+			for(auto node:nodes)
+			{
+				pair<int, struct Resources> dummy_nf;
+				dummy_nf.second.cpu=0;
+				dummy_nf.first=request.NF[counter].first;
+				float interference = interference_metric(local_nodes[node], dummy_nf);
+				// if(interference>1)
+				// 	cout<<interference<<endl;
+				float interference_delay = interference*delay_for_vnf_type(request.NF[counter].first);
+
+				total_delay += interference_delay;
+
+				total_interference*=interference;
+				counter++;
+			}
+
+			if(total_delay<=delay)
+			{
+				satisfied++;
+				// cout<<total_interference<<endl;
+				total_throughput += throughput*total_interference;
+			}
+		}
+	}
+
+	cout<<"satisfied for "<<string(algo_name)<<" "<<satisfied<<" "<<requests.size()<<"  "<<endl;
+	cout<<"Total throughput "<<total_throughput<<endl;
+	cout<<"Total VNFs placed with "<<algo_name<< " is "<<total_vnfs<<endl;
+	cout<<"Total nodes activated is "<<total_nodes<<endl;
+	cout<<"TAT with "<<algo_name<<" is "<<float(satisfied*1.0)/requests.size()<<endl;
 }
 
 void remove_request(int request_id, vector<struct Node> &local_nodes, vector<vector<struct LinkInfo>> &local_graph, map<int, struct Request> &map_request)

@@ -17,6 +17,7 @@ count = {}
 for i in range(len(lines)):
 	line = lines[i].split()
 	if(i%6==0):
+		# print(line)
 		algo = line[2]
 		if(algo not in satisfied):
 			satisfied[algo]={}
@@ -93,37 +94,100 @@ for algo in satisfied:
 
 f = open("results.log", "w")
 
+is_first=0
 for algo in sorted(satisfied.keys()):
 	f.write("satisfied algo = "+str(algo)+"\n")
 	for requests in sorted(satisfied[algo].keys()):
-		f.write(str(requests) + "\t" + str(satisfied[algo][requests]) + "\n")
 
+		if(is_first==0):
+			f.write(str(requests) + "\t" + str(satisfied[algo][requests]) + "\n")
+		else:
+			f.write(str(satisfied[algo][requests]) + "\n")
+	is_first=1
 
+is_first=0
 for algo in sorted(throughput.keys()):
 	f.write("thorughput algo = "+str(algo)+"\n")
 	for requests in sorted(throughput[algo].keys()):
-		f.write(str(requests) + "\t" + str(throughput[algo][requests]) + "\n")
+		if(is_first==0):
+			f.write(str(requests) + "\t" + str(throughput[algo][requests]) + "\n")
+		else:
+			f.write(str(throughput[algo][requests]) + "\n")
+	is_first=1
 
+is_first=0
 for algo in sorted(vnfs.keys()):
 	f.write("vnfs algo = "+str(algo)+"\n")
 	for requests in sorted(vnfs[algo].keys()):
-		f.write(str(requests) + "\t" + str(vnfs[algo][requests]) + "\n")
+		if(is_first==0):
+			f.write(str(requests) + "\t" + str(vnfs[algo][requests]) + "\n")
+		else:
+			f.write(str(vnfs[algo][requests]) + "\n")
+	is_first=1
 
+
+is_first=0
 for algo in sorted(nodes.keys()):
 	f.write("nodes algo = "+str(algo)+"\n")
 	for requests in sorted(nodes[algo].keys()):
-		f.write(str(requests) + "\t" + str(nodes[algo][requests]) + "\n")
+		if(is_first==0):
+			f.write(str(requests) + "\t" + str(nodes[algo][requests]) + "\n")
+		else:
+			f.write(str(nodes[algo][requests]) + "\n")
+	is_first=1	
 
+is_first=0
 for algo in sorted(tat.keys()):
 	f.write("tat algo = "+str(algo)+"\n")
 	for requests in sorted(tat[algo].keys()):
-		f.write(str(requests) + "\t" + str(tat[algo][requests]) + "\n")
+		if(is_first==0):
+			f.write(str(requests) + "\t" + str(tat[algo][requests]) + "\n")
+		else:
+			f.write(str(tat[algo][requests]) + "\n")
+	is_first=1
 
+is_first=0
 for algo in sorted(time.keys()):
 	f.write("time algo = "+str(algo)+"\n")
 	for requests in sorted(time[algo].keys()):
-		f.write(str(requests) + "\t" + str(time[algo][requests]) + "\n")
-
-
+		if(is_first==0):
+			f.write(str(requests) + "\t" + str(time[algo][requests]) + "\n")
+		else:
+			f.write(str(time[algo][requests]) + "\n")
+	is_first=1
 
 f.close()
+
+
+import matplotlib.pyplot as plt
+
+def graphit(dict, name):
+
+
+	plt.clf()
+	x_axis = list(sorted(dict[list(dict.keys())[0]].keys()))
+
+
+	for algo in sorted(dict.keys()):
+		y_axis=[]
+		for request in x_axis:
+			y_axis += [dict[algo][request]]
+		plt.plot(x_axis, y_axis, label = str(algo))
+
+	# plt.gca().set_color_cycle(['green','blue', 'red', 'orange'])
+	plt.legend(loc = 'best')
+	plt.title("Average " + str(name) + " vs. Number of Requests")
+	plt.ylabel(str(name))
+	plt.xlabel('Number of Requests')
+	plt.savefig("/home/abhi/Desktop/Sem8/TWiN/Project/Efficient-VNF-Placement/" + str(name) +"vsNumber_of_Requests.png")
+	# plt.show()
+
+
+graphit(nodes, "Nodes running")
+
+
+graphit(time, "Time(in ms)")
+graphit(tat, "Total Accepted Throughput")
+graphit(vnfs, "vnfs deployed")
+graphit(throughput, "Throughput(in Mbps)")
+graphit(satisfied, "satisfied")
