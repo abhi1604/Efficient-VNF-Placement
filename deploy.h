@@ -135,7 +135,7 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 			{
 				new_vnf_resources.cpu = resources.cpu;
 			}
-					
+			
 			consume_resources(&local_nodes[path[node].first].available_resources, new_vnf_resources);
 			struct VNF temp;
 			temp.type = type;
@@ -408,7 +408,7 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 
 	int path_node1_id = shareable_id[0], path_node2_id = shareable_id[1];  // because 0 is the source and the shareable types start from 1
 	int counter = 1; // not 0, because it is the source
-    for(int i=0; i<request.NF.size(); ++i)
+    for(int i=0; i<request.NF.size(); i++)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
     	struct Resources resources = request.NF[i].second;
@@ -432,7 +432,7 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 			skipnode.clear();
 			here:
 			float minInterference=FLT_MAX;
-			int minInterferenceNodeId = path_node1_id;
+			int minInterferenceNodeId;
 			// place between path[node1] and path[node2]
 			for(int j=path_node1_id; j<=path_node2_id; ++j)
 			{
@@ -531,6 +531,8 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 			else
 			{
 				new_vnf_resources.cpu = resources.cpu;
+			if(new_vnf_resources.cpu>local_nodes[path[node].first].available_resources.cpu)
+				cout<<local_nodes[path[node].first].available_resources.cpu<<" "<<new_vnf_resources.cpu<<endl;
 			}
 
 			consume_resources(&local_nodes[path[node].first].available_resources, new_vnf_resources);

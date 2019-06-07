@@ -2,7 +2,7 @@
 #include<string>
 using namespace std;
 
-int MAX_REQUESTS = 50;
+int MAX_REQUESTS = 1;
 int EDGE_NODE = 0;
 int CORE_NODE = 1;
 int CHAIN_LENGTH = 3;
@@ -211,6 +211,7 @@ float interference_metric(struct Node node, pair<int, struct Resources> NF)
 
 float interference_metric_AIA(struct Node node, pair<int, struct Resources> NF)
 {
+	// cout<<node.available_resources.cpu<<" "<<node.resources.cpu<<endl;
 	vector<pair<struct VNF, int>> existing_vnf = node.existing_vnf;
 
 	int type = NF.first;
@@ -225,6 +226,9 @@ float interference_metric_AIA(struct Node node, pair<int, struct Resources> NF)
 
 
 	float interference = float(total_required_cpu_resources*1.0)/node.resources.cpu;
+
+	// if(interference>1)
+	// 	cout<<total_required_cpu_resources<<" "<<node.resources.cpu<<endl;
 	return interference;
 }
 
@@ -243,14 +247,15 @@ float compute_vnf_delay(struct Request req)
 bool is_available(struct Resources r1, struct Resources r2)
 {
 	if(r1.cpu>=r2.cpu/*&&r1.mem>=r2.mem&&r1.IO>=r2.IO*/)
-		return 1;
+		return true;
 	else
-		return 0;
+		return false;
 }
 
 void consume_resources(struct Resources *r1, struct Resources r2)
 {
-	r1->cpu-=r2.cpu;
+	if(r1->cpu>=r2.cpu)
+		r1->cpu-=r2.cpu;
 	// r1->mem-=r2.mem;
 	// r1->IO-=r2.IO;
 }
@@ -301,8 +306,8 @@ void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_reques
 				else
 				{
 					interference = interference_metric_AIA(local_nodes[node], dummy_nf);
-				if(interference>1)
-					cout<<interference<<endl;
+				// if(interference>1)
+				// 	cout<<interference<<endl;
 				}
 				// if(interference>1)
 				// 	cout<<interference<<endl;
@@ -317,7 +322,7 @@ void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_reques
 			if(total_delay<=delay)
 			{
 				satisfied++;
-				// cout<<total_interference<<endl;
+				if(total_interference>1)
 				total_throughput += throughput*(1-total_interference);
 			}
 		}
