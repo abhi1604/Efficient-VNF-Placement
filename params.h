@@ -254,8 +254,7 @@ bool is_available(struct Resources r1, struct Resources r2)
 
 void consume_resources(struct Resources *r1, struct Resources r2)
 {
-	if(r1->cpu>=r2.cpu)
-		r1->cpu-=r2.cpu;
+	r1->cpu-=r2.cpu;
 	// r1->mem-=r2.mem;
 	// r1->IO-=r2.IO;
 }
