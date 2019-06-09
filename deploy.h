@@ -29,6 +29,8 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 
 	int path_node1_id = shareable_id[0], path_node2_id = shareable_id[1];  // because 0 is the source and the shareable types start from 1, if  present
 	int counter = 1; // not 0, because it is the source
+    
+	vector<int> shareable_resources_deployed; // vector for storing resources of shareable vnfs which are deployed 
     for(int i=0; i<request.NF.size(); ++i)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
@@ -49,12 +51,20 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 		}
 		else
 		{
+			struct Resources new_vnf_resources;
+			if(is_shareable(vnf_type))
+			{
+				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
+				shareable_resources_deployed.push_back(new_vnf_resources.cpu);
+			}
+			else
+				new_vnf_resources.cpu = resources.cpu;
 			// place between path[node1] and path[node2]
 			int is_deployed = 0;
 			for(int j=path_node1_id; j<=path_node2_id; ++j)
 			{
 				int node_id = path[j].first; 
-				if(is_available(temp_nodes[node_id].available_resources, resources)) // consider only if the node has sufficient resources
+				if(is_available(temp_nodes[node_id].available_resources, new_vnf_resources)) // consider only if the node has sufficient resources
 				{
 					// compute interference of vnf_type with node with id path[j] here and update minInterference
 					// float temp = interference_metric(local_nodes[node_id], request.NF[i]);
@@ -108,6 +118,7 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 	}
 
 	counter=0;
+	int counter1=0;
 	for(auto node:deployed_path)
 	{
 		int type = request.NF[counter].first;
@@ -128,17 +139,17 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 		else
 		{
 			// push the node running the shareable vnf type
-			if(is_shareable(type))  
-				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			struct Resources new_vnf_resources;
-			// if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
-			// {
-			// 	new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
-			// }
-			// else
-			// {
+			if(is_shareable(type))  
+			{
+				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
+				new_vnf_resources.cpu = shareable_resources_deployed[counter1];
+				counter1++;
+			}
+			else
+			{
 				new_vnf_resources.cpu = resources.cpu;
-			// }
+			}
 			
 			consume_resources(&local_nodes[path[node].first].available_resources, new_vnf_resources);
 			struct VNF temp;
@@ -226,6 +237,8 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 	int path_node1_id = shareable_id[1];  // because 0 is the source and the shareable types start from 1
 	int counter = 1; // not 0, because it is the source
 
+	vector<int> shareable_resources_deployed; // vector for storing resources of shareable vnfs which are deployed 
+
     for(int i=0; i<request.NF.size(); ++i)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
@@ -246,10 +259,19 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 		}
 		else
 		{
+			struct Resources new_vnf_resources;
+			if(is_shareable(vnf_type))
+			{
+				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
+				shareable_resources_deployed.push_back(new_vnf_resources.cpu);
+			}
+			else
+				new_vnf_resources.cpu = resources.cpu;
+
 			int is_deployed=0;
 			for(auto &node: most_loaded) 
 			{
-				if(is_available(node.second.available_resources, resources))
+				if(is_available(node.second.available_resources, new_vnf_resources))
 				{
 					// if(is_violating(local_nodes[node.second.id], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
 					// {
@@ -336,6 +358,7 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 	}
 
 	counter=0;
+	int counter1=0;
 	for(auto node:deployed_path)
 	{
 		int type = request.NF[counter].first;
@@ -356,18 +379,17 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 		else
 		{
 			// push the node running the shareable vnf type
-			if(is_shareable(type))  
-				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			struct Resources new_vnf_resources;
-
-			// if(is_available(local_nodes[path[node.first].first].available_resources, new_vnf_resources))
-			// {
-			// 	new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
-			// }
-			// else
-			// {
+			if(is_shareable(type))  
+			{
+				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
+				new_vnf_resources.cpu = shareable_resources_deployed[counter1];
+				counter1++;
+			}
+			else
+			{
 				new_vnf_resources.cpu = resources.cpu;
-			// }
+			}
 
 			consume_resources(&local_nodes[path[node.first].first].available_resources, new_vnf_resources);
 			struct VNF temp;
@@ -416,6 +438,8 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 	int path_node1_id = shareable_id[0], path_node2_id = shareable_id[1];  // because 0 is the source and the shareable types start from 1
 	int counter = 1; // not 0, because it is the source
 
+	vector<int> shareable_resources_deployed; // vector for storing resources of shareable vnfs which are deployed 
+
     for(int i=0; i<request.NF.size(); i++)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
@@ -437,6 +461,15 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 		}
 		else
 		{
+			struct Resources new_vnf_resources;
+			if(is_shareable(vnf_type))
+			{
+				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
+				shareable_resources_deployed.push_back(new_vnf_resources.cpu);
+			}
+			else
+				new_vnf_resources.cpu = resources.cpu;
+
 			float minInterference=FLT_MAX;
 			int minInterferenceNodeId;
 			// place between path[node1] and path[node2]
@@ -445,7 +478,7 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 				if(find(skipnode.begin(), skipnode.end(), j) == skipnode.end())
 				{
 					int node_id = path[j].first; 
-					if(is_available(temp_nodes[node_id].available_resources, resources)) // consider only if the node has sufficient resources
+					if(is_available(temp_nodes[node_id].available_resources, new_vnf_resources)) // consider only if the node has sufficient resources
 					{
 						// compute interference of vnf_type with node with id path[j] here and update minInterference
 						float temp = interference_metric_AIA(temp_nodes[node_id], request.NF[i]);
@@ -503,6 +536,7 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 	}
 
 	counter=0;
+	int counter1=0;
 	for(auto node:deployed_path)
 	{
 		int type = request.NF[counter].first;
@@ -523,20 +557,17 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 		else
 		{
 			// push the node running the shareable vnf type
-			if(is_shareable(type))  
-				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
-			
 			struct Resources new_vnf_resources;
-			// if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
-			// {
-			// 	new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
-			// }
-			// else
-			// {
+			if(is_shareable(type))  
+			{
+				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
+				new_vnf_resources.cpu = shareable_resources_deployed[counter1];
+				counter1++;
+			}
+			else
+			{
 				new_vnf_resources.cpu = resources.cpu;
-			if(new_vnf_resources.cpu>local_nodes[path[node].first].available_resources.cpu)
-				cout<<local_nodes[path[node].first].available_resources.cpu<<" "<<new_vnf_resources.cpu<<endl;
-			// }
+			}
 
 			consume_resources(&local_nodes[path[node].first].available_resources, new_vnf_resources);
 			struct VNF temp;
@@ -585,6 +616,9 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 
 	int path_node1_id = shareable_id[0], path_node2_id = shareable_id[1];  // because 0 is the source and the shareable types start from 1
 	int counter = 1; // not 0, because it is the source
+    
+	vector<int> shareable_resources_deployed; // vector for storing resources of shareable vnfs which are deployed 
+
     for(int i=0; i<request.NF.size(); ++i)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
@@ -605,6 +639,15 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 		}
 		else
 		{
+			struct Resources new_vnf_resources;
+			if(is_shareable(vnf_type))
+			{
+				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
+				shareable_resources_deployed.push_back(new_vnf_resources.cpu);
+			}
+			else
+				new_vnf_resources.cpu = resources.cpu;
+
 			skipnode.clear();
 			here:
 			float minInterference=FLT_MAX;
@@ -615,7 +658,7 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 				if(find(skipnode.begin(), skipnode.end(), j) == skipnode.end())
 				{
 					int node_id = path[j].first; 
-					if(is_available(temp_nodes[node_id].available_resources, resources)) // consider only if the node has sufficient resources
+					if(is_available(temp_nodes[node_id].available_resources, new_vnf_resources)) // consider only if the node has sufficient resources
 					{
 						// compute interference of vnf_type with node with id path[j] here and update minInterference
 						float temp = interference_metric(temp_nodes[node_id], request.NF[i]);
@@ -678,6 +721,7 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 	}
 
 	counter=0;
+	int counter1=0;
 	for(auto node:deployed_path)
 	{
 		int type = request.NF[counter].first;
@@ -698,18 +742,17 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 		else
 		{
 			// push the node running the shareable vnf type
-			if(is_shareable(type))  
-				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
-			
 			struct Resources new_vnf_resources;
-			// if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
-			// {
-			// 	new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
-			// }
-			// else
-			// {
+			if(is_shareable(type))  
+			{
+				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
+				new_vnf_resources.cpu = shareable_resources_deployed[counter1];
+				counter1++;
+			}
+			else
+			{
 				new_vnf_resources.cpu = resources.cpu;
-			// }
+			}
 
 			consume_resources(&local_nodes[path[node].first].available_resources, new_vnf_resources);
 			struct VNF temp;

@@ -63,9 +63,6 @@ void SPH(vector<struct Request> requests)  // SPH
 		}
 	}
 
-	// cout<<"satisfied for SPH "<<satisfied<<" "<<requests.size()<<"  "<<endl;
-	// cout<<"Total throughput "<<total_throughput<<endl;
-	// cout<<"Total VNFs placed with SPH is "<<VNFS_FOR_SPH<<endl;
 	stats(local_nodes, map_request, requests, string("SPH"));
 }
 
@@ -97,10 +94,6 @@ void GUS(vector<struct Request> requests)  // SPH
 		}
 	}
 
-	// cout<<"satisfied for GUS "<<satisfied<<" "<<requests.size()<<"  "<<endl;
-	// cout<<"Total throughput "<<total_throughput<<endl;
-	// cout<<"Total VNFs placed with GUS is "<<VNFS_FOR_GUS<<endl;
-
 	stats(local_nodes, map_request, requests, string("GUS"));
 }
 
@@ -130,9 +123,6 @@ void AIA(vector<struct Request> requests)
 			}
 		}
 	}
-	// cout<<"satisfied for AIA "<<satisfied<<" "<<requests.size()<<"  "<<endl;
-	// cout<<"Total throughput "<<total_throughput<<endl;
-	// cout<<"Total VNFs placed with AIA is "<<VNFS_FOR_AIA<<endl;
 	stats(local_nodes, map_request, requests, string("AIA"));
 }
 
@@ -162,9 +152,6 @@ void algo(vector<struct Request> requests)
 			}
 		}
 	}
-	// cout<<"satisfied for algo "<<satisfied<<" "<<requests.size()<<"  "<<endl;
-	// cout<<"Total throughput "<<total_throughput<<endl;
-	// cout<<"Total VNFs placed with Algo is "<<VNFS_FOR_ALGO<<endl;
 	stats(local_nodes, map_request, requests, string("algo"));
 }
 
