@@ -22,7 +22,7 @@ int CORE_MAX_RESOURCES = 200;
 
 // request resources for a SFC
 int REQUEST_MIN_THROUGHPUT = 80;
-int REQUEST_MAX_THROUGHPUT = 100;
+int REQUEST_MAX_THROUGHPUT = 80;
 
 // Request delay
 int REQUEST_MIN_DELAY = 80;
@@ -321,7 +321,7 @@ void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_reques
 			if(total_delay<=delay)
 			{
 				satisfied++;
-				if(total_interference>1)
+				// if(total_interference>1)
 				total_throughput += throughput*(1-total_interference);
 			}
 		}

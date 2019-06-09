@@ -131,14 +131,14 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 			if(is_shareable(type))  
 				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			struct Resources new_vnf_resources;
-			if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
-			{
-				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
-			}
-			else
-			{
+			// if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
+			// {
+			// 	new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
+			// }
+			// else
+			// {
 				new_vnf_resources.cpu = resources.cpu;
-			}
+			// }
 			
 			consume_resources(&local_nodes[path[node].first].available_resources, new_vnf_resources);
 			struct VNF temp;
@@ -360,14 +360,14 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			struct Resources new_vnf_resources;
 
-			if(is_available(local_nodes[path[node.first].first].available_resources, new_vnf_resources))
-			{
-				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
-			}
-			else
-			{
+			// if(is_available(local_nodes[path[node.first].first].available_resources, new_vnf_resources))
+			// {
+			// 	new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
+			// }
+			// else
+			// {
 				new_vnf_resources.cpu = resources.cpu;
-			}
+			// }
 
 			consume_resources(&local_nodes[path[node.first].first].available_resources, new_vnf_resources);
 			struct VNF temp;
@@ -416,7 +416,6 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 	int path_node1_id = shareable_id[0], path_node2_id = shareable_id[1];  // because 0 is the source and the shareable types start from 1
 	int counter = 1; // not 0, because it is the source
 
-	// cout<<"It should have this order!\n";
     for(int i=0; i<request.NF.size(); i++)
     {
     	int vnf_type = request.NF[i].first; // vnf type of request
@@ -473,12 +472,10 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 			deployed_path.push_back(minInterferenceNodeId);
 			consume_resources(&temp_nodes[path[minInterferenceNodeId].first].available_resources, resources);
 			// skipnode.push_back(minInterferenceNodeId);
-			// cout<<minInterferenceNodeId<<" ";
 		}
 		if(current_delay>delay)
 			return results;
     }
-    // cout<<endl;
 	
 	// request placed successfully here!
 	// update the local graph now
@@ -506,10 +503,8 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 	}
 
 	counter=0;
-	// cout<<"It has this order\n";
 	for(auto node:deployed_path)
 	{
-		// cout<<node<<" ";
 		int type = request.NF[counter].first;
 		struct Resources resources = request.NF[counter].second;
 		
@@ -532,16 +527,16 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			
 			struct Resources new_vnf_resources;
-			if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
-			{
-				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
-			}
-			else
-			{
+			// if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
+			// {
+			// 	new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
+			// }
+			// else
+			// {
 				new_vnf_resources.cpu = resources.cpu;
 			if(new_vnf_resources.cpu>local_nodes[path[node].first].available_resources.cpu)
 				cout<<local_nodes[path[node].first].available_resources.cpu<<" "<<new_vnf_resources.cpu<<endl;
-			}
+			// }
 
 			consume_resources(&local_nodes[path[node].first].available_resources, new_vnf_resources);
 			struct VNF temp;
@@ -555,7 +550,6 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 		map_request[request.request_id].nodes.push_back(path[node].first);
 		counter++;
 	}
-	// cout<<endl;
 	// results.throughput = 1.0*throughput*(1-throughput_interference_till_now);
 	results.is_satisfied=1;
 	map_request[request.request_id].satisfied=1;
@@ -708,14 +702,14 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 				vnfNodes[type].push_back(shareable_vnf_deployed[type]);
 			
 			struct Resources new_vnf_resources;
-			if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
-			{
-				new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
-			}
-			else
-			{
+			// if(is_available(local_nodes[path[node].first].available_resources, new_vnf_resources))
+			// {
+			// 	new_vnf_resources.cpu = ((VNF_MAX_RESOURCES - VNF_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + VNF_MIN_RESOURCES;
+			// }
+			// else
+			// {
 				new_vnf_resources.cpu = resources.cpu;
-			}
+			// }
 
 			consume_resources(&local_nodes[path[node].first].available_resources, new_vnf_resources);
 			struct VNF temp;
