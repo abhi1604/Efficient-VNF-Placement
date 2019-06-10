@@ -227,7 +227,6 @@ void processRequests()
 			temp.request_id = i;
 			// Filling the request
 			vector<int> unique_vnfs;
-			
 			for(int j=0;j<chain_length;++j)
 			{
 				int id;
