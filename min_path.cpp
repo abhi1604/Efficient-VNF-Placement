@@ -226,10 +226,16 @@ void processRequests()
 			temp.throughput = ((REQUEST_MAX_THROUGHPUT - REQUEST_MIN_THROUGHPUT) * ((float)rand() / RAND_MAX)) + REQUEST_MIN_THROUGHPUT;
 			temp.request_id = i;
 			// Filling the request
+			vector<int> unique_vnfs;
+			
 			for(int j=0;j<chain_length;++j)
 			{
-				map<int, int> ids;
-				int id = rand()%TYPES_AVAILABLE;
+				int id;
+				do
+				{
+					id = rand()%TYPES_AVAILABLE;
+				}while(find(unique_vnfs.begin(), unique_vnfs.end(), id)!=unique_vnfs.end());
+				unique_vnfs.push_back(id);
 				struct Resources resources;
 				resources.cpu = ((REQUEST_MAX_RESOURCES - REQUEST_MIN_RESOURCES) * ((float)rand() / RAND_MAX)) + REQUEST_MIN_RESOURCES;
 				temp.NF.push_back(make_pair(id, resources));
