@@ -2,7 +2,6 @@
 #include<string>
 using namespace std;
 
-int MAX_REQUESTS = 1;
 int EDGE_NODE = 0;
 int CORE_NODE = 1;
 int CHAIN_LENGTH = 3;
@@ -14,7 +13,7 @@ int MEM_TYPE = 2;
 
 // edge node resources
 int EDGE_MIN_RESOURCES = 20;
-int EDGE_MAX_RESOURCES = 40; 
+int EDGE_MAX_RESOURCES = 40;
 
 // core node resources
 int CORE_MIN_RESOURCES = 50;
@@ -22,7 +21,7 @@ int CORE_MAX_RESOURCES = 200;
 
 // request resources for a SFC
 int REQUEST_MIN_THROUGHPUT = 80;
-int REQUEST_MAX_THROUGHPUT = 80;
+int REQUEST_MAX_THROUGHPUT = 100;
 
 // Request delay
 int REQUEST_MIN_DELAY = 80;
