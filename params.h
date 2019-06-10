@@ -124,7 +124,7 @@ struct Request
 bool is_shareable(int id)
 {
 	if(id==0||id==1)
-		return true;
+		return false;
 	else
 		return false;
 }
