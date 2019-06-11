@@ -328,7 +328,6 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 
 	if(total_delay>delay)
 	{
-
 		return results;
 	}
 
@@ -420,7 +419,7 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
 	vector<int> deployed_path;
 	map<int, int> shareable_vnf_deployed;
-	float current_delay = selected_path_info.delay; 
+	float current_delay = 0; 
 	float delay = request.delay;
 	// vector<float> throughput_interference;
 	vector<int> skipnode;
@@ -428,6 +427,22 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 
 	vector<struct Node> temp_nodes(local_nodes);
 
+	vector<float> path_delays;  // it stores the path delays between consecutive nodes in the path
+
+	for(int i=0;i<path.size()-1;++i)
+	{
+		int node1 = path[i].first;
+		int node2 = path[i+1].first;
+
+		for(auto link: local_graph[node1])
+		{
+			if(link.node2==node2)
+			{
+				path_delays.push_back(link.delay);
+				break;
+			}
+		}
+	}
 
 	for(int i=0; i<path.size(); ++i)
 	{
@@ -453,7 +468,7 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 			// }
 			float interference = interference_metric_AIA(temp_nodes[path[path_node2_id].first], request.NF[i]);
 			// throughput_interference.push_back(interference);
-			current_delay += interference*delay_for_vnf_type(vnf_type);
+			current_delay += delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(path_node2_id);
 			counter++;
 			path_node1_id = path_node2_id;
@@ -501,7 +516,7 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 
 			path_node1_id = minInterferenceNodeId;
 			float interference = interference_metric_AIA(temp_nodes[path[minInterferenceNodeId].first], request.NF[i]);
-			current_delay += interference*delay_for_vnf_type(vnf_type);
+			current_delay += delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(minInterferenceNodeId);
 			consume_resources(&temp_nodes[path[minInterferenceNodeId].first].available_resources, resources);
 			// skipnode.push_back(minInterferenceNodeId);
@@ -509,7 +524,34 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 		if(current_delay>delay)
 			return results;
     }
-	
+
+	// check if the deployed path taken can satisfy the delay requirement
+
+	float total_delay=current_delay;
+
+	for(int i=0; i<deployed_path.size()-1; ++i)
+	{
+		int index_of_path_node1 = deployed_path[i];
+		int index_of_path_node2 = deployed_path[i+1];
+
+		if(index_of_path_node1 != index_of_path_node2)
+		{
+			if(index_of_path_node2<index_of_path_node1)
+			{
+				int temp = index_of_path_node2;
+				index_of_path_node2=index_of_path_node1;
+				index_of_path_node1 = temp;
+			}
+			for(int j=index_of_path_node1;j<index_of_path_node2;++j)
+				total_delay+=path_delays[j];
+		}
+	}
+
+	if(total_delay>delay)
+	{
+		return results;
+	}
+
 	// request placed successfully here!
 	// update the local graph now
 	float throughput_interference_till_now=1;
@@ -577,7 +619,7 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 			consume_resources(&temp.available_resources, resources);
 			local_nodes[path[node].first].existing_vnf.push_back(make_pair(temp, request.request_id));
 		}
-		map_request[request.request_id].current_delay=current_delay;
+		map_request[request.request_id].current_delay=total_delay;
 		map_request[request.request_id].nodes.push_back(path[node].first);
 		counter++;
 	}
@@ -599,7 +641,7 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 	vector<pair<int, struct Resources>> NF = request.NF;  // type of NF, resources it should have
 	vector<int> deployed_path;
 	map<int, int> shareable_vnf_deployed;
-	float current_delay = selected_path_info.delay; 
+	float current_delay = 0; 
 	float delay = request.delay;
 	vector<float> throughput_interference;
 	vector<int> skipnode;
@@ -607,6 +649,23 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 
 
 	vector<struct Node> temp_nodes(local_nodes);
+
+	vector<float> path_delays;  // it stores the path delays between consecutive nodes in the path
+
+	for(int i=0;i<path.size()-1;++i)
+	{
+		int node1 = path[i].first;
+		int node2 = path[i+1].first;
+
+		for(auto link: local_graph[node1])
+		{
+			if(link.node2==node2)
+			{
+				path_delays.push_back(link.delay);
+				break;
+			}
+		}
+	}
 
 	for(int i=0; i<path.size(); ++i)
 	{
@@ -631,7 +690,7 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 			}
 			float interference = interference_metric(temp_nodes[path[path_node2_id].first], request.NF[i]);
 			throughput_interference.push_back(interference);
-			current_delay += interference*delay_for_vnf_type(vnf_type);
+			current_delay += delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(path_node2_id);
 			counter++;
 			path_node1_id = path_node2_id;
@@ -687,13 +746,40 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 			path_node1_id = minInterferenceNodeId;
 			float interference = interference_metric(temp_nodes[path[minInterferenceNodeId].first], request.NF[i]);
 			throughput_interference.push_back(interference);
-			current_delay += interference*delay_for_vnf_type(vnf_type);
+			current_delay += delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(minInterferenceNodeId);
 			consume_resources(&temp_nodes[path[minInterferenceNodeId].first].available_resources, resources);
 		}
 		if(current_delay>delay)
 			return results;
     }
+
+	// check if the deployed path taken can satisfy the delay requirement
+
+	float total_delay=current_delay;
+
+	for(int i=0; i<deployed_path.size()-1; ++i)
+	{
+		int index_of_path_node1 = deployed_path[i];
+		int index_of_path_node2 = deployed_path[i+1];
+
+		if(index_of_path_node1 != index_of_path_node2)
+		{
+			if(index_of_path_node2<index_of_path_node1)
+			{
+				int temp = index_of_path_node2;
+				index_of_path_node2=index_of_path_node1;
+				index_of_path_node1 = temp;
+			}
+			for(int j=index_of_path_node1;j<index_of_path_node2;++j)
+				total_delay+=path_delays[j];
+		}
+	}
+
+	if(total_delay>delay)
+	{
+		return results;
+	}
 
 	// request placed successfully here!
 	// update the local graph now
@@ -762,7 +848,7 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 			consume_resources(&temp.available_resources, resources);
 			local_nodes[path[node].first].existing_vnf.push_back(make_pair(temp, request.request_id));
 		}
-		map_request[request.request_id].current_delay=current_delay;
+		map_request[request.request_id].current_delay=total_delay;
 		map_request[request.request_id].nodes.push_back(path[node].first);
 		counter++;
 	}

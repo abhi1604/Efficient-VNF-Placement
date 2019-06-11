@@ -86,11 +86,11 @@ void GUS(vector<struct Request> requests)  // SPH
 		{
 			struct end_result temp_satisfied;
 			temp_satisfied = deployVNFSforGUS(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
-			if(temp_satisfied.is_satisfied!=0)
-			{
-				total_throughput += temp_satisfied.throughput;
-				satisfied++;
-			}
+			// if(temp_satisfied.is_satisfied!=0)
+			// {
+			// 	total_throughput += temp_satisfied.throughput;
+			// 	satisfied++;
+			// }
 		}
 	}
 
@@ -116,11 +116,11 @@ void AIA(vector<struct Request> requests)
 		{
 			struct end_result temp_satisfied;
 			temp_satisfied = deployVNFSforAIA(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
-			if(temp_satisfied.is_satisfied!=0)
-			{
-				total_throughput += temp_satisfied.throughput;
-				satisfied++;
-			}
+			// if(temp_satisfied.is_satisfied!=0)
+			// {
+			// 	total_throughput += temp_satisfied.throughput;
+			// 	satisfied++;
+			// }
 		}
 	}
 	stats(local_nodes, map_request, requests, string("AIA"));
@@ -145,11 +145,11 @@ void algo(vector<struct Request> requests)
 		{
 			struct end_result temp_satisfied;
 			temp_satisfied = deployVNFSforAlgo(request, selected_path_info, local_nodes, local_graph, vnfNodes, map_request);
-			if(temp_satisfied.is_satisfied!=0)
-			{
-				total_throughput += temp_satisfied.throughput;
-				satisfied++;
-			}
+			// if(temp_satisfied.is_satisfied!=0)
+			// {
+			// 	total_throughput += temp_satisfied.throughput;
+			// 	satisfied++;
+			// }
 		}
 	}
 	stats(local_nodes, map_request, requests, string("algo"));
