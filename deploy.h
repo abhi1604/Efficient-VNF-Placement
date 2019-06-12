@@ -37,13 +37,13 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
     	struct Resources resources = request.NF[i].second;
 		if(is_shareable(vnf_type) && path[path_node2_id].second==vnf_type)
 		{
-			// if(is_violating(local_nodes[path[path_node2_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
-			// {
-			// 	return results;
-			// }
-			// float interference = interference_metric(local_nodes[path[path_node2_id].first], request.NF[i]);
+			if(is_violating(local_nodes[path[path_node2_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
+			{
+				return results;
+			}
+			float interference = interference_metric(local_nodes[path[path_node2_id].first], request.NF[i]);
 			// throughput_interference.push_back(interference);
-			// current_delay += interference*delay_for_vnf_type(vnf_type);
+			current_delay += interference*delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(path_node2_id);
 			counter++;
 			path_node1_id = path_node2_id;
@@ -67,10 +67,10 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 				if(is_available(temp_nodes[node_id].available_resources, new_vnf_resources)) // consider only if the node has sufficient resources
 				{
 					// compute interference of vnf_type with node with id path[j] here and update minInterference
-					// float temp = interference_metric(local_nodes[node_id], request.NF[i]);
-					// current_delay += temp*delay_for_vnf_type(vnf_type);
-					// if(is_violating(local_nodes[node_id], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
-					// 	return results;
+					float temp = interference_metric(local_nodes[node_id], request.NF[i]);
+					current_delay += temp*delay_for_vnf_type(vnf_type);
+					if(is_violating(local_nodes[node_id], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
+						return results;
 					// throughput_interference.push_back(temp);
 					deployed_path.push_back(j);
 					consume_resources(&temp_nodes[node_id].available_resources, resources);
@@ -245,14 +245,14 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
     	struct Resources resources = request.NF[i].second;
 		if(is_shareable(vnf_type) && path[path_node1_id].second==vnf_type)
 		{
-			// if(is_violating(local_nodes[path[path_node1_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
-			// {
-			// 	return results;
-			// }
+			if(is_violating(local_nodes[path[path_node1_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
+			{
+				return results;
+			}
 			
 			float interference = interference_metric(temp_nodes[path[path_node1_id].first], request.NF[i]);
 			// throughput_interference.push_back(interference);
-			current_delay += delay_for_vnf_type(vnf_type); // 1+ to consider both vnf delay and interference delay
+			current_delay += (1+interference)*delay_for_vnf_type(vnf_type); // 1+ to consider both vnf delay and interference delay
 			deployed_path.push_back(make_pair(path_node1_id, vnf_type));
 			counter++;
 			path_node1_id = shareable_id[counter];
@@ -273,14 +273,14 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 			{
 				if(is_available(node.second.available_resources, new_vnf_resources))
 				{
-					// if(is_violating(local_nodes[node.second.id], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
-					// {
-					// 	return results;
-					// }
+					if(is_violating(local_nodes[node.second.id], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
+					{
+						return results;
+					}
 					
 					float interference = interference_metric(node.second, request.NF[i]);
 					// throughput_interference.push_back(interference);
-					current_delay += delay_for_vnf_type(vnf_type)*1.0;  // 1+ to consider both vnf delay and interference delay
+					current_delay += delay_for_vnf_type(vnf_type)*(1.0+interference);  // 1+ to consider both vnf delay and interference delay
 					deployed_path.push_back(make_pair(node.first, vnf_type));
 					is_deployed = 1;
 					consume_resources(&node.second.available_resources, resources);
@@ -461,14 +461,14 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
     	struct Resources resources = request.NF[i].second;
 		if(is_shareable(vnf_type) && path[path_node2_id].second==vnf_type)
 		{
-			// if(is_violating(local_nodes[path[path_node2_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
-			// {
-			// 	goto here;  // if the node hosting a shareable vnf is violating the SLA of past request, try other nodes
-			// 	return results;
-			// }
+			if(is_violating(local_nodes[path[path_node2_id].first], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
+			{
+				// goto here;  // if the node hosting a shareable vnf is violating the SLA of past request, try other nodes
+				return results;
+			}
 			float interference = interference_metric_AIA(temp_nodes[path[path_node2_id].first], request.NF[i]);
 			// throughput_interference.push_back(interference);
-			current_delay += delay_for_vnf_type(vnf_type);
+			current_delay += (1+interference)*delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(path_node2_id);
 			counter++;
 			path_node1_id = path_node2_id;
@@ -513,10 +513,13 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 			{
 				shareable_vnf_deployed[vnf_type] = path[minInterferenceNodeId].first;
 			}
-
+			if(is_violating(temp_nodes[path[minInterferenceNodeId].first], request.NF[i], map_request)) // if current request violates SLA of already deployed rquests, skip this node and try others
+			{
+				return results;
+			}
 			path_node1_id = minInterferenceNodeId;
 			float interference = interference_metric_AIA(temp_nodes[path[minInterferenceNodeId].first], request.NF[i]);
-			current_delay += delay_for_vnf_type(vnf_type);
+			current_delay += (1+interference)*delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(minInterferenceNodeId);
 			consume_resources(&temp_nodes[path[minInterferenceNodeId].first].available_resources, resources);
 			// skipnode.push_back(minInterferenceNodeId);
@@ -627,7 +630,6 @@ struct end_result deployVNFSforAIA(struct Request request, struct path_info sele
 	results.is_satisfied=1;
 	map_request[request.request_id].satisfied=1;
 
-	// cout<<"\n-------------------------------------------------------------------------------------------------------\n";
 	return results;
 }
 
@@ -690,7 +692,7 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 			}
 			float interference = interference_metric(temp_nodes[path[path_node2_id].first], request.NF[i]);
 			throughput_interference.push_back(interference);
-			current_delay += delay_for_vnf_type(vnf_type);
+			current_delay += (1+interference)*delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(path_node2_id);
 			counter++;
 			path_node1_id = path_node2_id;
@@ -746,7 +748,7 @@ struct end_result deployVNFSforAlgo(struct Request request, struct path_info sel
 			path_node1_id = minInterferenceNodeId;
 			float interference = interference_metric(temp_nodes[path[minInterferenceNodeId].first], request.NF[i]);
 			throughput_interference.push_back(interference);
-			current_delay += delay_for_vnf_type(vnf_type);
+			current_delay += (1+interference)*delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(minInterferenceNodeId);
 			consume_resources(&temp_nodes[path[minInterferenceNodeId].first].available_resources, resources);
 		}
