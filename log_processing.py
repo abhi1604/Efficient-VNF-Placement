@@ -179,7 +179,7 @@ def graphit(dict, name):
 	plt.title("Average " + str(name) + " vs. Number of Requests")
 	plt.ylabel(str(name))
 	plt.xlabel('Number of Requests')
-	plt.savefig("/home/abhi/Desktop/Sem8/TWiN/Project/Efficient-VNF-Placement/" + str(name) +"vsNumber_of_Requests.png")
+	plt.savefig("/home/abhi/Desktop/acad/Sem8/TWiN/Project/Efficient-VNF-Placement/" + str(name) +"vsNumber_of_Requests.png")
 	# plt.show()
 
 
