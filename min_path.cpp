@@ -44,13 +44,14 @@ void SPH(vector<struct Request> requests)  // SPH
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 	map<int, struct Request> map_request;
 
-	int satisfied = 0;
+	string algo_name = string("SPH");
+
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
 		map_request[request.request_id].satisfied=0;
 
-		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes, algo_name);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		if(!selected_path_info.path_with_type.empty())
 		{
 			struct end_result temp_satisfied;
@@ -63,7 +64,7 @@ void SPH(vector<struct Request> requests)  // SPH
 		}
 	}
 
-	stats(local_nodes, map_request, requests, string("SPH"));
+	stats(local_nodes, map_request, requests, algo_name);
 }
 
 void GUS(vector<struct Request> requests)  // SPH
@@ -73,15 +74,14 @@ void GUS(vector<struct Request> requests)  // SPH
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 	map<int, struct Request> map_request;
 
-	float total_throughput=0;
-	int satisfied = 0;
+	string algo_name = string("GUS");
 
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
 		map_request[request.request_id].satisfied=0;
 		
-		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes, algo_name);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		if(!selected_path_info.path_with_type.empty())
 		{
 			struct end_result temp_satisfied;
@@ -94,7 +94,7 @@ void GUS(vector<struct Request> requests)  // SPH
 		}
 	}
 
-	stats(local_nodes, map_request, requests, string("GUS"));
+	stats(local_nodes, map_request, requests, algo_name);
 }
 
 void AIA(vector<struct Request> requests)
@@ -104,14 +104,14 @@ void AIA(vector<struct Request> requests)
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 	map<int, struct Request> map_request;
 
-	float total_throughput=0;
-	int satisfied = 0;
+	string algo_name = string("AIA");
+
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
 		map_request[request.request_id].satisfied=0;
 
-		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes, algo_name);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		if(!selected_path_info.path_with_type.empty())
 		{
 			struct end_result temp_satisfied;
@@ -123,7 +123,7 @@ void AIA(vector<struct Request> requests)
 			// }
 		}
 	}
-	stats(local_nodes, map_request, requests, string("AIA"));
+	stats(local_nodes, map_request, requests, algo_name);
 }
 
 void algo(vector<struct Request> requests)
@@ -133,14 +133,14 @@ void algo(vector<struct Request> requests)
 	map<int, vector<int>> vnfNodes;   // for a vnf type, nodes that run it
 	map<int, struct Request> map_request;
 
-	float total_throughput=0;
-	int satisfied = 0;
+	string algo_name = string("algo");
+
 	for(auto &request:requests)
 	{
 		map_request[request.request_id] = request;
 		map_request[request.request_id].satisfied=0;
 
-		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes, algo_name);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		if(!selected_path_info.path_with_type.empty())
 		{
 			struct end_result temp_satisfied;
@@ -152,7 +152,7 @@ void algo(vector<struct Request> requests)
 			// }
 		}
 	}
-	stats(local_nodes, map_request, requests, string("algo"));
+	stats(local_nodes, map_request, requests, algo_name);
 }
 
 void serveRequests(vector<struct Request> requests)

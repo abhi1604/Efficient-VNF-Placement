@@ -124,7 +124,7 @@ struct Request
 bool is_shareable(int id)
 {
 	if(id==0||id==1)
-		return true;
+		return false;
 	else
 		return false;
 }
@@ -273,7 +273,7 @@ void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_reques
 			total_vnfs += node.existing_vnf.size();
 		}
 	}
-	// cout<<"\n--------------------------------------------------\n";
+
 	for(auto id_request:map_request)
 	{
 		struct Request request = id_request.second;
@@ -283,7 +283,6 @@ void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_reques
 			float delay = request.delay;
 			float current_delay = request.current_delay;
 
-			// cout<<current_delay<<endl;
 			vector<int> nodes = request.nodes;
 			vector<pair<int, struct Resources>> NF = request.NF;
 			
@@ -304,15 +303,9 @@ void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_reques
 				else
 				{
 					interference = interference_metric_AIA(local_nodes[node], dummy_nf);
-				// if(interference>1)
-				// 	cout<<interference<<endl;
 				}
-				// if(interference>1)
-				// 	cout<<interference<<endl;
-				float interference_delay = interference*delay_for_vnf_type(request.NF[counter].first);
-
-				total_delay += interference_delay;
-
+				// float interference_delay = interference*delay_for_vnf_type(request.NF[counter].first);
+				// total_delay += interference_delay;
 				total_interference*=interference;
 				counter++;
 			}
@@ -320,7 +313,6 @@ void stats(vector<struct Node> local_nodes, map<int, struct Request> &map_reques
 			if(total_delay<=delay)
 			{
 				satisfied++;
-				// if(total_interference>1)
 				total_throughput += throughput*(1-total_interference);
 			}
 		}

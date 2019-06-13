@@ -3,7 +3,7 @@
 #include <limits.h> 
 using namespace std;
 
-struct path_info multi_stage(struct Request request, vector<vector<struct LinkInfo>> graph, map<int, vector<int>> vnfNodes, vector<struct Node> local_nodes)
+struct path_info multi_stage(struct Request request, vector<vector<struct LinkInfo>> graph, map<int, vector<int>> vnfNodes, vector<struct Node> local_nodes, string algo_name)
 {
     // request has source, destination, NF{vector<pair<int, struct Resources>>}, throughput, delay 
     int V = graph.size();// Get the number of vertices in graph 

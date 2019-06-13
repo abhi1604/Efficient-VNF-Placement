@@ -41,7 +41,7 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 			{
 				return results;
 			}
-			float interference = interference_metric(local_nodes[path[path_node2_id].first], request.NF[i]);
+			float interference = interference_metric_AIA(local_nodes[path[path_node2_id].first], request.NF[i]);
 			// throughput_interference.push_back(interference);
 			current_delay += interference*delay_for_vnf_type(vnf_type);
 			deployed_path.push_back(path_node2_id);
@@ -67,7 +67,7 @@ struct end_result deployVNFSforSPH(struct Request request, struct path_info sele
 				if(is_available(temp_nodes[node_id].available_resources, new_vnf_resources)) // consider only if the node has sufficient resources
 				{
 					// compute interference of vnf_type with node with id path[j] here and update minInterference
-					float temp = interference_metric(local_nodes[node_id], request.NF[i]);
+					float temp = interference_metric_AIA(local_nodes[node_id], request.NF[i]);
 					current_delay += temp*delay_for_vnf_type(vnf_type);
 					if(is_violating(local_nodes[node_id], request.NF[i], map_request))  // if current request violates SLA of already deployed rquests, reject this
 						return results;
@@ -250,7 +250,7 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 				return results;
 			}
 			
-			float interference = interference_metric(temp_nodes[path[path_node1_id].first], request.NF[i]);
+			float interference = interference_metric_AIA(temp_nodes[path[path_node1_id].first], request.NF[i]);
 			// throughput_interference.push_back(interference);
 			current_delay += (1+interference)*delay_for_vnf_type(vnf_type); // 1+ to consider both vnf delay and interference delay
 			deployed_path.push_back(make_pair(path_node1_id, vnf_type));
@@ -278,7 +278,7 @@ struct end_result deployVNFSforGUS(struct Request request, struct path_info sele
 						return results;
 					}
 					
-					float interference = interference_metric(node.second, request.NF[i]);
+					float interference = interference_metric_AIA(node.second, request.NF[i]);
 					// throughput_interference.push_back(interference);
 					current_delay += delay_for_vnf_type(vnf_type)*(1.0+interference);  // 1+ to consider both vnf delay and interference delay
 					deployed_path.push_back(make_pair(node.first, vnf_type));
