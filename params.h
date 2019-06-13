@@ -20,8 +20,8 @@ int CORE_MIN_RESOURCES = 50;
 int CORE_MAX_RESOURCES = 200; 
 
 // request resources for a SFC
-int REQUEST_MIN_THROUGHPUT = 80;
-int REQUEST_MAX_THROUGHPUT = 100;
+int REQUEST_MIN_THROUGHPUT = 90;
+int REQUEST_MAX_THROUGHPUT = 90;
 
 // Request delay
 int REQUEST_MIN_DELAY = 80;
@@ -71,6 +71,8 @@ float delay_for_vnf_type(int type)
 		return 2.5;  // 2.5 ms
 	else if(type==3)  // type 4
 		return 3.5;   // 3.5ms
+
+	return 0; // this will never be called since types are only 4
 }
 
 struct Resources
@@ -144,6 +146,8 @@ int typeofvnf(int type)
 		return IO_TYPE;
 	else if(type==2)
 		return MEM_TYPE;
+
+	return 0; // this will never be called as types are only 4
 }
 
 struct end_result
