@@ -18,4 +18,29 @@ Run:
 * python3 log_processing.py
 
 
+To check taking into consideration shareability, modify the is_shareable function in params.h
+
+For shareable:
+
+	if(id==0||id==1)
+		return true;
+	else
+		return false;
+
+For non-shareable:
+
+	if(id==0||id==1)
+		return false;
+	else
+		return false;
+
+
+For changing the delays and other parameters for the request, change the respective parameters in params.h
+
+For example:
+// Request delay
+int REQUEST_MIN_DELAY;
+int REQUEST_MAX_DELAY;
+
+
 The code is available at: https://github.com/abhi1604/Efficient-VNF-Placement

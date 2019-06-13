@@ -23,10 +23,6 @@ int CORE_MAX_RESOURCES = 200;
 int REQUEST_MIN_THROUGHPUT = 90;
 int REQUEST_MAX_THROUGHPUT = 90;
 
-// Request delay
-int REQUEST_MIN_DELAY = 80;
-int REQUEST_MAX_DELAY = 100;
-
 // VNF resources
 int VNF_MIN_RESOURCES = 5;
 int VNF_MAX_RESOURCES = 10;
@@ -34,6 +30,10 @@ int VNF_MAX_RESOURCES = 10;
 // Request resources
 int REQUEST_MIN_RESOURCES = 1;
 int REQUEST_MAX_RESOURCES = 5;
+
+// Request delay
+int REQUEST_MIN_DELAY = 20;
+int REQUEST_MAX_DELAY = 30;
 
 // edge node -to- edge node delay
 int EDGE_EDGE_MIN_DELAY = 1;
@@ -126,7 +126,7 @@ struct Request
 bool is_shareable(int id)
 {
 	if(id==0||id==1)
-		return false;
+		return true;
 	else
 		return false;
 }
