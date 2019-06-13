@@ -4,8 +4,8 @@ Efficient VNF Placement
 
 To run the simulation, follow the below steps:
 
-* g++ min_path.cpp -std=c++14 -o simulation
-* ./simulation NUM_REQUESTS
+* g++ min_path.cpp -std=c++14
+* ./a.out NUM_REQUESTS
 
 
 *NUM_REQUESTS is the number of requests that is given to the algorithm*
