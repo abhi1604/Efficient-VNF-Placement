@@ -11,6 +11,7 @@
 #include"dijkstra.h"
 #include"deploy.h"
 #include"multi_stage.h"
+#include"dfs.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -111,7 +112,7 @@ void AIA(vector<struct Request> requests)
 		map_request[request.request_id] = request;
 		map_request[request.request_id].satisfied=0;
 
-		struct path_info selected_path_info = multi_stage(request, local_graph, vnfNodes, local_nodes, algo_name);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
+		struct path_info selected_path_info = longestPath(request, local_graph, vnfNodes, local_nodes, algo_name);  // add local_nodes here as a paramter if path selection is to be done taking node capability into considerartion too
 		if(!selected_path_info.path_with_type.empty())
 		{
 			struct end_result temp_satisfied;
