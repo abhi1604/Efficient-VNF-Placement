@@ -13,13 +13,9 @@ vector<pair<int, int>> max_path;
 void DFS(vector<vector<struct LinkInfo>> graph, int node, vector <bool> &visited, vector<pair<int,int>> &cur_path, struct Request request, float cur_path_delay)
 {
 
-    pair<int, int> temp1;
-
-    temp1.first = node;
-
     if(request.destination==node)
     {
-        if(max_delay < cur_path_delay)   
+        if(max_delay < cur_path_delay && cur_path_delay<=request.delay)   
         {
             max_delay = cur_path_delay;
             max_path = cur_path;
@@ -34,7 +30,11 @@ void DFS(vector<vector<struct LinkInfo>> graph, int node, vector <bool> &visited
         if(!visited[x.node2])
         {
             visited[x.node2] = 1;
-            cur_path.push_back(make_pair(x.node2, -1));
+            if(x.node2==request.destination)
+                cur_path.push_back(make_pair(x.node2, -2));
+            else
+                cur_path.push_back(make_pair(x.node2, -1));
+
             new_path_delay = cur_path_delay + x.delay;
 
             DFS(graph, x.node2, visited, cur_path, request, new_path_delay);
@@ -69,7 +69,14 @@ struct path_info longestPath(struct Request request, vector<vector<struct LinkIn
     // Call DFS for src vertex i 
     DFS(graph, src, visited, temp_path, request, 0); 
 
-    complete_path = temp_path;
+    complete_path = max_path;
+
+    cout<<"complete_path: "<<request.source<<" "<<request.destination<<endl;
+    for(auto i:max_path)
+    {
+        cout<<i.first<<" "<<i.second<<endl;
+    }
+cout<<"---------------------------------------------\n";
 
     if(max_delay>delay || max_delay == FLT_MIN)
     {
