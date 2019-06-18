@@ -62,7 +62,6 @@ struct path_info longestPath(struct Request request, vector<vector<struct LinkIn
     vector<pair<int, int>> complete_path;
     vector<pair<int, int>> temp_path;
 
-
     temp_path.push_back(make_pair(src, -2));
     visited[src]=1;
 
@@ -84,14 +83,6 @@ struct path_info longestPath(struct Request request, vector<vector<struct LinkIn
         vector<pair<int, int>> temp;
         selected_path_info.path_with_type = temp;
         return selected_path_info;
-    }
-
-    if(complete_path.size()!=0 && complete_path[complete_path.size()-1].first!=dest)
-    {
-        struct path_info selected_path_info;
-        vector<pair<int, int>> temp;
-        selected_path_info.path_with_type = temp;
-        return selected_path_info;   
     }
 
     struct path_info selected_path_info;
