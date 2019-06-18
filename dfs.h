@@ -71,12 +71,12 @@ struct path_info longestPath(struct Request request, vector<vector<struct LinkIn
 
     complete_path = max_path;
 
-    cout<<"complete_path: "<<request.source<<" "<<request.destination<<endl;
-    for(auto i:max_path)
-    {
-        cout<<i.first<<" "<<i.second<<endl;
-    }
-cout<<"---------------------------------------------\n";
+//     cout<<"complete_path: "<<request.source<<" "<<request.destination<<endl;
+//     for(auto i:max_path)
+//     {
+//         cout<<i.first<<" "<<i.second<<endl;
+//     }
+// cout<<"---------------------------------------------\n";
 
     if(max_delay>delay || max_delay == FLT_MIN)
     {
