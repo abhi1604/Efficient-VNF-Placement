@@ -42,5 +42,10 @@ For example:
 int REQUEST_MIN_DELAY;
 int REQUEST_MAX_DELAY;
 
+This work is an extension of the following paper:
+
+Zhang, Qixia et al. “Adaptive Interference-Aware VNF Placement for Service-Customized 5G Network Slices.” (2019).
+
+Link of the paper: https://www.semanticscholar.org/paper/Adaptive-Interference-Aware-VNF-Placement-for-5G-Zhang-Liu/5aeae87f05bb4a5f08b9fae9a135863c4eaeea59
 
 The code is available at: https://github.com/abhi1604/Efficient-VNF-Placement
